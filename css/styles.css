@@ -1,0 +1,64 @@
+body {
+  background-image: url("/assets/spiral.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-color: #2b2b2b;
+  max-width: 1280px;
+  margin: auto;
+}
+
+/* navigation/header */
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 250px;
+}
+
+#poke-btn {
+  width: 43.8%;
+  cursor: pointer;
+}
+
+#poke-btn:hover {
+  width: 44.5%;
+}
+
+#last-btn {
+  width: 10.6%;
+  cursor: pointer;
+}
+#last-btn:hover {
+  width: 11%;
+  transform: translateY(-2px);
+}
+
+#next-btn {
+  width: 10.6%;
+  cursor: pointer;
+}
+
+#next-btn:hover {
+  width: 11%;
+}
+
+#next-btn.disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+#next-btn.disabled:hover {
+  width: 10.6%;
+}
+
+#last-btn.disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+#last-btn.disabled:hover {
+  width: 10.6%;
+}

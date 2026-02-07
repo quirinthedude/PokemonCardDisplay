@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "source": "pokeapi.co",
+    "createdAt": "2026-02-04",
+    "rules": {
+      "baseOnly": true,
+      "mustEvolve": true,
+      "statsTop": [
+        "hp",
+        "attack",
+        "defense",
+        "special-attack",
+        "speed"
+      ],
+      "evolutionFlattening": "linear-first-branch"
+    },
+    "startOffset": 0,
+    "speciesPageSize": 200,
+    "targetN": 10
+  },
+  "cards": [
+    {
+      "id": 1,
+      "name": "bulbasaur",
+      "types": [
+        "grass",
+        "poison"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+      "stats": {
+        "hp": 45,
+        "attack": 49,
+        "defense": 49,
+        "special-attack": 65,
+        "speed": 45
+      },
+      "evolution": [
+        "bulbasaur",
+        "ivysaur",
+        "venusaur"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "charmander",
+      "types": [
+        "fire"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
+      "stats": {
+        "hp": 39,
+        "attack": 52,
+        "defense": 43,
+        "special-attack": 60,
+        "speed": 65
+      },
+      "evolution": [
+        "charmander",
+        "charmeleon",
+        "charizard"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "squirtle",
+      "types": [
+        "water"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png",
+      "stats": {
+        "hp": 44,
+        "attack": 48,
+        "defense": 65,
+        "special-attack": 50,
+        "speed": 43
+      },
+      "evolution": [
+        "squirtle",
+        "wartortle",
+        "blastoise"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "caterpie",
+      "types": [
+        "bug"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10.png",
+      "stats": {
+        "hp": 45,
+        "attack": 30,
+        "defense": 35,
+        "special-attack": 20,
+        "speed": 45
+      },
+      "evolution": [
+        "caterpie",
+        "metapod",
+        "butterfree"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "weedle",
+      "types": [
+        "bug",
+        "poison"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/13.png",
+      "stats": {
+        "hp": 40,
+        "attack": 35,
+        "defense": 30,
+        "special-attack": 20,
+        "speed": 50
+      },
+      "evolution": [
+        "weedle",
+        "kakuna",
+        "beedrill"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "pidgey",
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/16.png",
+      "stats": {
+        "hp": 40,
+        "attack": 45,
+        "defense": 40,
+        "special-attack": 35,
+        "speed": 56
+      },
+      "evolution": [
+        "pidgey",
+        "pidgeotto",
+        "pidgeot"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "rattata",
+      "types": [
+        "normal"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/19.png",
+      "stats": {
+        "hp": 30,
+        "attack": 56,
+        "defense": 35,
+        "special-attack": 25,
+        "speed": 72
+      },
+      "evolution": [
+        "rattata",
+        "raticate"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "spearow",
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/21.png",
+      "stats": {
+        "hp": 40,
+        "attack": 60,
+        "defense": 30,
+        "special-attack": 31,
+        "speed": 70
+      },
+      "evolution": [
+        "spearow",
+        "fearow"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "ekans",
+      "types": [
+        "poison"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/23.png",
+      "stats": {
+        "hp": 35,
+        "attack": 60,
+        "defense": 44,
+        "special-attack": 40,
+        "speed": 55
+      },
+      "evolution": [
+        "ekans",
+        "arbok"
+      ]
+    },
+    {
+      "id": 27,
+      "name": "sandshrew",
+      "types": [
+        "ground"
+      ],
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/27.png",
+      "stats": {
+        "hp": 50,
+        "attack": 75,
+        "defense": 85,
+        "special-attack": 20,
+        "speed": 40
+      },
+      "evolution": [
+        "sandshrew",
+        "sandslash"
+      ]
+    }
+  ]
+}

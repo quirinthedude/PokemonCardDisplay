@@ -1,0 +1,79 @@
+// variables, constants
+
+let pokeCount = 0;
+let baseNames = [];
+const NEXT = document.getElementById("next-btn");
+const LAST = document.getElementById("last-btn");
+const START = document.getElementById("poke-btn");
+const MAX_POKEMONS = 341;
+
+// imports
+
+// eventlisteners
+NEXT.addEventListener("click", function () {
+  if (NEXT.classList.contains("disabled")) return;
+  nextDecade();
+});
+LAST.addEventListener("click", function () {
+  if (LAST.classList.contains("disabled")) return;
+  lastDecade();
+});
+START.addEventListener("click", initDecade);
+
+// init
+LAST.classList.add("disabled");
+
+// main part
+
+loadBaseNames();
+loadPokeDecade();
+renderPokemons();
+
+
+// functions
+
+// fetches
+async function loadBaseNames() {
+  const nameJSON = await fetch("/json/base_names.json");
+  const data = await nameJSON.json();
+  baseNames = data.bases;
+  console.log(baseNames);
+}
+
+async function loadPokeDecade() {
+  //name der Datenbank pokeindex
+  //fetch
+  //fallback
+  //Schleife pokecount -pokecount+10
+  //index erstellen mit relevanten Daten
+}
+
+// actions
+function nextDecade() {
+  if (pokeCount + 10 > MAX_POKEMONS) {
+    NEXT.classList.add("disabled");
+  } else {
+    NEXT.classList.remove("disabled");
+    pokeCount += 10;
+  }
+}
+
+function lastDecade() {
+  if (pokeCount === 0) {
+    NEXT.classList.add("disabled");
+  } else {
+    NEXT.classList.remove("disabled");
+    pokeCount -= 10;
+  }
+}
+
+function initDecade() {
+  pokeCount = 0;
+  LAST.classList.add("disabled");
+}
+
+// Rendering
+ function renderPokemons() {
+  // Rendername
+  // Renderimg
+}
