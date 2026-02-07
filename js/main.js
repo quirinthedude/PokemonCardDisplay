@@ -1,12 +1,14 @@
 // variables, constants
 
 let pokeCount = 0;
+let pokeArray = [];
 let baseNames = [];
+let maxPokemons;
 const NEXT = document.getElementById("next-btn");
 const LAST = document.getElementById("last-btn");
 const START = document.getElementById("poke-btn");
 const MAX_POKEMONS = 341;
-
+const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 // imports
 
 // eventlisteners
@@ -29,7 +31,6 @@ loadBaseNames();
 loadPokeDecade();
 renderPokemons();
 
-
 // functions
 
 // fetches
@@ -38,10 +39,42 @@ async function loadBaseNames() {
   const data = await nameJSON.json();
   baseNames = data.bases;
   console.log(baseNames);
+  maxPokemons = baseNames.length ?? MAX_POKEMONS;
 }
 
 async function loadPokeDecade() {
   //name der Datenbank pokeindex
+  let pokeCountEnd = 0;
+  if (pokeCount + 9 > maxPokemons) {
+    pokeCountEnd = maxPokemons - 1;
+  } else {
+    pokeCountEnd = pokeCount + 9;
+  }
+  pokeArray = [];
+  for ( 
+    let pokemonIndex = pokeCount;
+    pokemonIndex <= pokeCountEnd;
+    pokemonIndex++
+  ) {
+    const actualPokemon = baseNames[pokemonIndex];
+    try {
+      let response = await fetch(BASE_URL + actualPokemon);
+      if (!response.ok) {
+        throw new Error(
+          `HTTP ${response.status} for ${BASE_URL + actualPokemon}`,
+        );
+      }
+
+      let actualPokemonData = await response.json();
+      //return actualPokemon;
+      console.log(actualPokemonData);
+      pokeArray.push(actualPokemonData);
+    } catch (err) {
+      console.warn("Fetch failed:", err);
+      // return null;
+    }
+  }
+
   //fetch
   //fallback
   //Schleife pokecount -pokecount+10
@@ -60,9 +93,9 @@ function nextDecade() {
 
 function lastDecade() {
   if (pokeCount === 0) {
-    NEXT.classList.add("disabled");
+    LAST.classList.add("disabled");
   } else {
-    NEXT.classList.remove("disabled");
+    LAST.classList.remove("disabled");
     pokeCount -= 10;
   }
 }
@@ -73,7 +106,7 @@ function initDecade() {
 }
 
 // Rendering
- function renderPokemons() {
+function renderPokemons() {
   // Rendername
   // Renderimg
 }
