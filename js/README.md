@@ -1,7 +1,7 @@
 # Pokémon Card Display – Pagination & UI State
 
 Frontend-Projekt im Rahmen der **Developer Akademie – Modul 8**.  
-Fokus liegt auf sauberer **Pagination-Logik**, **UI-State-Handling** und klarer Trennung von Struktur, Stil und Logik.
+Fokus liegt auf sauberer **Pagination-Logik**, **UI-State-Handling** (meinerseits) und klarer Trennung von Struktur, Stil und Logik. Vor allem aber, ist die eigentliche Lektion der Umgang mit API
 
 ## Projektziel
 
