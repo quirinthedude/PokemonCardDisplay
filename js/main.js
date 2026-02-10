@@ -31,9 +31,9 @@ init()
 // functions
 
 function init() {
-  loadBaseNames();
-  loadPokeDecade();
-  renderPokemons();
+  await loadBaseNames();
+  await loadPokeDecade();
+  await renderPokemons();
 }
 
 // fetches
