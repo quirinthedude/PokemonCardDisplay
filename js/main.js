@@ -30,7 +30,7 @@ init()
 
 // functions
 
-function init() {
+async function init() {
   await loadBaseNames();
   await loadPokeDecade();
   await renderPokemons();
