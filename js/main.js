@@ -26,12 +26,15 @@ START.addEventListener("click", initDecade);
 LAST.classList.add("disabled");
 
 // main part
-
-loadBaseNames();
-loadPokeDecade();
-renderPokemons();
+init()
 
 // functions
+
+function init() {
+  loadBaseNames();
+  loadPokeDecade();
+  renderPokemons();
+}
 
 // fetches
 async function loadBaseNames() {
@@ -51,7 +54,7 @@ async function loadPokeDecade() {
     pokeCountEnd = pokeCount + 9;
   }
   pokeArray = [];
-  for ( 
+  for (
     let pokemonIndex = pokeCount;
     pokemonIndex <= pokeCountEnd;
     pokemonIndex++
@@ -66,19 +69,14 @@ async function loadPokeDecade() {
       }
 
       let actualPokemonData = await response.json();
-      //return actualPokemon;
       console.log(actualPokemonData);
       pokeArray.push(actualPokemonData);
     } catch (err) {
       console.warn("Fetch failed:", err);
-      // return null;
     }
   }
 
-  //fetch
-  //fallback
-  //Schleife pokecount -pokecount+10
-  //index erstellen mit relevanten Daten
+
 }
 
 // actions
