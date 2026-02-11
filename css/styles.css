@@ -1,3 +1,14 @@
+/* presets */
+
+:root {
+--yellow-main: #FFD400;
+--yellow-light: #FFF176;
+--blue-dark: #0B5ED7;
+--blue-mid: #1E88E5;
+--white-soft: #F7FBFF;
+
+}
+
 body {
   background-image: url("/assets/spiral.png");
   background-repeat: no-repeat;
@@ -61,4 +72,71 @@ header {
 
 #last-btn.disabled:hover {
   width: 10.6%;
+}
+
+/* main - grid für die cards */
+
+#pokemon-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 16px;
+
+  /* optional: nicht zu breit auf ultrawide */
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pokemon-card {
+  border: 3px solid var(--blue-dark);
+  border-radius: 16px;
+  background: var(--white-soft);
+  padding: 12px;
+
+  display: grid;
+  gap: 10px;
+  align-content: start;
+
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+}
+
+.poke-img-wrap {
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--yellow-light), var(--yellow-main));
+  padding: 10px;
+
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+}
+
+.poke-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+.poke-name {
+  text-transform: capitalize;
+  font-weight: 700;
+  text-align: center;
+  color: var(--blue-dark);
+}
+
+.pokemon-card.empty {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
+.pokemon-card.empty .poke-img-wrap {
+  background: #e9eef7;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-2px);
+}
+
+.pokemon-card {
+  transition: transform 120ms ease, box-shadow 120ms ease;
 }
