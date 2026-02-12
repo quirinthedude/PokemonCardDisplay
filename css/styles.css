@@ -1,12 +1,11 @@
 /* presets */
 
 :root {
---yellow-main: #FFD400;
---yellow-light: #FFF176;
---blue-dark: #0B5ED7;
---blue-mid: #1E88E5;
---white-soft: #F7FBFF;
-
+  --yellow-main: #ffd400;
+  --yellow-light: #fff176;
+  --blue-dark: #0b5ed7;
+  --blue-mid: #1e88e5;
+  --white-soft: #f7fbff;
 }
 
 body {
@@ -74,17 +73,13 @@ header {
   width: 10.6%;
 }
 
-/* main - grid für die cards */
+/* main - grid for cards */
 
 #pokemon-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(5, 18%);
   gap: 16px;
   padding: 16px;
-
-  /* optional: nicht zu breit auf ultrawide */
-  max-width: 1100px;
-  margin: 0 auto;
 }
 
 .pokemon-card {
@@ -97,7 +92,7 @@ header {
   gap: 10px;
   align-content: start;
 
-  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
 }
 
 .poke-img-wrap {
@@ -138,5 +133,21 @@ header {
 }
 
 .pokemon-card {
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+/* responsive */
+@media (max-width: 800px) {
+  #pokemon-container {
+    grid-template-columns: repeat(2, 38%);
+    justify-content: center;
+  }
+}
+
+@media (max-width: 400px) {
+  #pokemon-container {
+    grid-template-columns: 1fr;
+  }
 }
