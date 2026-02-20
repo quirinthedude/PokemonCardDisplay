@@ -1,4 +1,11 @@
-/* presets */
+/* =========================================================
+   DA Modul 8 – Pokemon Card Display
+   styles.css (clean + structured)
+   ========================================================= */
+
+/* =========================
+   1) Presets / Variables
+   ========================= */
 
 :root {
   --yellow-main: #ffd400;
@@ -8,17 +15,24 @@
   --white-soft: #f7fbff;
 }
 
+/* =========================
+   2) Base Layout
+   ========================= */
+
 body {
   background-image: url("/assets/spiral.png");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: 100% 100%;
   background-color: #2b2b2b;
+
   max-width: 1280px;
   margin: auto;
 }
 
-/* navigation/header */
+/* =========================
+   3) Header / Navigation
+   ========================= */
 
 header {
   display: flex;
@@ -37,43 +51,36 @@ header {
   width: 44.5%;
 }
 
-#last-btn {
-  width: 10.6%;
-  cursor: pointer;
-}
-#last-btn:hover {
-  width: 11%;
-  transform: translateY(-2px);
-}
-
+#last-btn,
 #next-btn {
   width: 10.6%;
   cursor: pointer;
 }
 
+#last-btn:hover,
 #next-btn:hover {
   width: 11%;
 }
 
-#next-btn.disabled {
-  opacity: 0.4;
-  cursor: default;
+#last-btn:hover {
+  transform: translateY(-2px);
 }
 
-#next-btn.disabled:hover {
-  width: 10.6%;
-}
-
+#next-btn.disabled,
 #last-btn.disabled {
   opacity: 0.4;
   cursor: default;
 }
 
+#next-btn.disabled:hover,
 #last-btn.disabled:hover {
   width: 10.6%;
+  transform: none;
 }
 
-/* main - grid for cards */
+/* =========================
+   4) Main Grid (Cards)
+   ========================= */
 
 #pokemon-container {
   display: grid;
@@ -82,7 +89,13 @@ header {
   padding: 16px;
 }
 
+/* =========================
+   5) Card Component
+   ========================= */
+
 .pokemon-card {
+  position: relative;
+
   border: 3px solid var(--blue-dark);
   border-radius: 16px;
   background: var(--white-soft);
@@ -93,6 +106,11 @@ header {
   align-content: start;
 
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-2px);
 }
 
 .poke-img-wrap {
@@ -119,6 +137,14 @@ header {
   color: var(--blue-dark);
 }
 
+.poke-types {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+/* Empty / placeholder card */
 .pokemon-card.empty {
   opacity: 0.55;
   border-style: dashed;
@@ -128,17 +154,90 @@ header {
   background: #e9eef7;
 }
 
-.pokemon-card:hover {
-  transform: translateY(-2px);
+/* =========================
+   6) Type Icon (CSS-only)
+   - uses: .pokemon-card[data-type="..."]
+   ========================= */
+
+.pokemon-card::after {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  font-size: 22px;
+  line-height: 1;
+  content: "❓";
 }
 
-.pokemon-card {
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
+/* don't show icon on placeholders */
+.pokemon-card.empty::after {
+  content: "";
 }
 
-/* responsive */
+/* 18 standard types */
+.pokemon-card[data-type="normal"]::after { content: "⭐"; }
+.pokemon-card[data-type="fire"]::after { content: "🔥"; }
+.pokemon-card[data-type="water"]::after { content: "💧"; }
+.pokemon-card[data-type="grass"]::after { content: "🌿"; }
+.pokemon-card[data-type="electric"]::after { content: "⚡"; }
+.pokemon-card[data-type="ice"]::after { content: "❄️"; }
+.pokemon-card[data-type="fighting"]::after { content: "🥊"; }
+.pokemon-card[data-type="poison"]::after { content: "☠️"; }
+.pokemon-card[data-type="ground"]::after { content: "🏜️"; }
+.pokemon-card[data-type="flying"]::after { content: "🕊️"; } /* safe fallback */
+.pokemon-card[data-type="psychic"]::after { content: "🔮"; }
+.pokemon-card[data-type="bug"]::after { content: "🐛"; }
+.pokemon-card[data-type="rock"]::after { content: "🪨"; }
+.pokemon-card[data-type="ghost"]::after { content: "👻"; }
+.pokemon-card[data-type="dragon"]::after { content: "🐉"; }
+.pokemon-card[data-type="dark"]::after { content: "🌑"; }
+.pokemon-card[data-type="steel"]::after { content: "⚙️"; }
+.pokemon-card[data-type="fairy"]::after { content: "🧚"; }
+
+/* =========================
+   7) Type Background Colors
+   - minimal, easy to tweak
+   ========================= */
+
+.pokemon-card[data-type="fire"] { background: #fff2f0; }
+.pokemon-card[data-type="water"] { background: #f0f6ff; }
+.pokemon-card[data-type="grass"] { background: #f1fff4; }
+.pokemon-card[data-type="electric"] { background: #fffbe6; }
+.pokemon-card[data-type="psychic"] { background: #fff0fb; }
+.pokemon-card[data-type="ice"] { background: #effcff; }
+.pokemon-card[data-type="fighting"] { background: #fff1ec; }
+.pokemon-card[data-type="poison"] { background: #f7efff; }
+.pokemon-card[data-type="ground"] { background: #fff7ea; }
+.pokemon-card[data-type="flying"] { background: #f3f6ff; }
+.pokemon-card[data-type="bug"] { background: #f7ffe9; }
+.pokemon-card[data-type="rock"] { background: #f7f4ea; }
+.pokemon-card[data-type="ghost"] { background: #f4f0ff; }
+.pokemon-card[data-type="dragon"] { background: #f0f3ff; }
+.pokemon-card[data-type="dark"] { background: #f2f2f2; }
+.pokemon-card[data-type="steel"] { background: #f3f6f8; }
+.pokemon-card[data-type="fairy"] { background: #fff0f6; }
+.pokemon-card[data-type="normal"] { background: #f7fbff; }
+.pokemon-card[data-type="unknown"] { background: #f7fbff; }
+
+/* =========================
+   8) Dialog (Lightbox)
+   ========================= */
+
+dialog#lightbox {
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  background: var(--white-soft);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* =========================
+   9) Responsive
+   ========================= */
+
 @media (max-width: 800px) {
   #pokemon-container {
     grid-template-columns: repeat(2, 38%);

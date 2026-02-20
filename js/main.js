@@ -4,47 +4,53 @@ let pokeCount = 0;
 let pokeArray = [];
 let baseNames = [];
 let maxPokemons;
-const NEXT = document.getElementById("next-btn");
-const LAST = document.getElementById("last-btn");
-const START = document.getElementById("poke-btn");
+let next; //  document.getElementById("next-btn")
+let last; // document.getElementById("last-btn")
+let start; // document.getElementById("poke-btn") all done in bindUI()
 const MAX_POKEMONS = 341;
+const PAGE_SIZE = 20;
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 // imports
+import { renderPokemons } from "./render.js";
 
 // eventlisteners
-NEXT.addEventListener("click", function () {
-  if (NEXT.classList.contains("disabled")) return;
-  nextDecade();
-});
-LAST.addEventListener("click", function () {
-  if (LAST.classList.contains("disabled")) return;
-  lastDecade();
-});
-START.addEventListener("click", initDecade);
 
-// init
-LAST.classList.add("disabled");
-
-// main part
-init();
+window.addEventListener("DOMContentLoaded", init);
 
 // functions
 
 async function init() {
+  bindUI();
   await loadBaseNames();
-  await loadPokeDecade();
-  renderPokemons();
+  await loadPokemons();
+  renderPokemons(pokeArray, PAGE_SIZE);
+  updateNavUI();
+}
+
+function bindUI() {
+  next = document.getElementById("next-btn");
+  last = document.getElementById("last-btn");
+  start = document.getElementById("poke-btn");
+  next.addEventListener("click", function () {
+    if (next.classList.contains("disabled")) return;
+    nextPokemons();
+  });
+  last.addEventListener("click", function () {
+    if (last.classList.contains("disabled")) return;
+    lastPokemons();
+  });
+  start.addEventListener("click", initPokemons);
 }
 
 function updateNavUI() {
-  if (pokeCount === 0) LAST.classList.add("disabled");
-  else LAST.classList.remove("disabled");
+  if (pokeCount === 0) last.classList.add("disabled");
+  else last.classList.remove("disabled");
 
-  const lastPageStart = Math.floor((maxPokemons - 1) / 10) * 10;
+  const lastPageStart = Math.floor((maxPokemons - 1) / PAGE_SIZE) * PAGE_SIZE;
   //               cut floating point
-  //  -> investigates last decade of the 341 Pokemons
-  if (pokeCount >= lastPageStart) NEXT.classList.add("disabled");
-  else NEXT.classList.remove("disabled");
+  //  -> investigates last row of the 341 Pokemons
+  if (pokeCount >= lastPageStart) next.classList.add("disabled");
+  else next.classList.remove("disabled");
 }
 
 // fetches
@@ -56,97 +62,63 @@ async function loadBaseNames() {
   maxPokemons = baseNames.length > 0 ? baseNames.length : MAX_POKEMONS;
 }
 
-async function loadPokeDecade() {
-  let pokeCountEnd = 0;
-  if (pokeCount + 9 > maxPokemons) {
-    pokeCountEnd = maxPokemons - 1;
-  } else {
-    pokeCountEnd = pokeCount + 9;
-  }
-  pokeArray = [];
-  for (
-    let pokemonIndex = pokeCount;
-    pokemonIndex <= pokeCountEnd;
-    pokemonIndex++
-  ) {
-    const actualPokemon = baseNames[pokemonIndex];
+async function loadPokemonBatch({ startIndex, targetCount }) {
+  // option object, a starting point for maybe more parameters
+  // -> nice candidate for a representing project
+  const results = [];
+  // array for pokemon data
+  let i = startIndex;
+
+  while (results.length < targetCount && i < maxPokemons) {
+    const name = baseNames[i];
+
     try {
-      let response = await fetch(BASE_URL + actualPokemon);
+      const response = await fetch(BASE_URL + name);
       if (!response.ok) {
-        throw new Error(
-          `HTTP ${response.status} for ${BASE_URL + actualPokemon}`,
-        );
+        throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
       }
 
-      let actualPokemonData = await response.json();
-      pokeArray.push(actualPokemonData);
+      const data = await response.json();
+      results.push(data);
     } catch (err) {
-      console.warn("Fetch failed:", err);
+      console.warn(`Skipped: ${name} - `, err);
     }
+
+    i++;
   }
-  console.log(pokeArray);
+
+  return results;
+}
+
+async function loadPokemons() {
+  pokeArray = await loadPokemonBatch({
+    startIndex: pokeCount, 
+    targetCount: PAGE_SIZE
+  });
 }
 
 // actions
-async function nextDecade() {
-  if (pokeCount + 10 > maxPokemons) return;
+async function nextPokemons() {
+  if (pokeCount + PAGE_SIZE >= maxPokemons) return;
 
-  pokeCount += 10;
-  await loadPokeDecade();
-  renderPokemons();
+  pokeCount += PAGE_SIZE;
+  await loadPokemons();
+  renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
 }
 
-async function lastDecade() {
+async function lastPokemons() {
   if (pokeCount === 0) return;
 
-  pokeCount -= 10;
-  await loadPokeDecade();
-  renderPokemons();
+  pokeCount -= PAGE_SIZE;
+  await loadPokemons();
+  renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
 }
 
-async function initDecade() {
+async function initPokemons() {
   pokeCount = 0;
-  await loadPokeDecade();
-  renderPokemons();
+  await loadPokemons();
+  renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
-}
-
-// Rendering
-function renderPokemons() {
-  const container = document.getElementById("pokemon-container");
-  if (!container) return;
-
-  container.innerHTML = "";
-  for (let pokeFrameIndex = 0; pokeFrameIndex < 10; pokeFrameIndex++) {
-    const p = pokeArray[pokeFrameIndex];
-    const card = document.createElement("div");
-    //                  inserts element "div"
-    // easy way to create a wrapper inside "pokemon-container"
-    card.classList.add("pokemon-card");
-
-    if (!p) {
-      card.classList.add("empty");
-      card.textContent = "-";
-      container.appendChild(card);
-      // appends a node (element) as the last child of an element
-      // here appends the wrapper
-      continue;
-    }
-
-    const name = p.name ?? "unknown";
-    const img =
-      p.sprites?.other?.["official-artwork"]?.front_default ??
-      p.sprites?.front_default ??
-      "";
-
-    card.innerHTML = `
-      <div class="poke-img-wrap">
-      ${img ? `<img src="${img}" alt="${name}">` : `<div class="img-placeholder"></div>`}
-      </div>
-      <div class="poke-name">${name}</div>
-    `;
-    container.appendChild(card);
-  }
 }
