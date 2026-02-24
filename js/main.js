@@ -7,6 +7,7 @@ let maxPokemons;
 let next; //  document.getElementById("next-btn")
 let last; // document.getElementById("last-btn")
 let start; // document.getElementById("poke-btn") all done in bindUI()
+let searchInput;
 const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
@@ -31,6 +32,8 @@ function bindUI() {
   next = document.getElementById("next-btn");
   last = document.getElementById("last-btn");
   start = document.getElementById("poke-btn");
+  searchInput = document.querySelector(".search-input");
+
   next.addEventListener("click", function () {
     if (next.classList.contains("disabled")) return;
     nextPokemons();
@@ -40,6 +43,10 @@ function bindUI() {
     lastPokemons();
   });
   start.addEventListener("click", initPokemons);
+
+  if (searchInput) {
+    searchInput.addEventListener("input", handlesearch);
+  }
 }
 
 function updateNavUI() {
@@ -55,7 +62,7 @@ function updateNavUI() {
 
 // fetches
 async function loadBaseNames() {
-  const nameJSON = await fetch("/json/base_names.json");
+  const nameJSON = await fetch("./json/base_names.json");
   const data = await nameJSON.json();
   baseNames = data.bases;
   console.log(baseNames);

@@ -20,7 +20,7 @@
    ========================= */
 
 body {
-  background-image: url("/assets/spiral.png");
+  background-image: url("../assets/spiral.png");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: 100% 100%;
@@ -77,6 +77,70 @@ header {
   width: 10.6%;
   transform: none;
 }
+
+/* =========================
+   Search Bar 
+   ========================= */
+
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 2% 0;
+}
+
+.search-input {
+  width: 60%;
+  height: 32px;           
+  max-width: 420px;     
+  min-width: 240px;     
+
+  padding: 2%;
+  font-size: 1rem;
+  font-weight: 600;
+
+  background: var(--yellow-main);
+  color: var(--blue-dark);
+
+  border: 0.2em solid var(--white-soft);   /* inner border */
+  outline: 0.3em solid var(--blue-mid);    /* outer border */
+  outline-offset: 0;
+
+  border-radius: 1em;
+
+  /* fluid shadow (relative to font-size) */
+  box-shadow: -0.35em 0.35em 0 var(--blue-dark);
+
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.search-input::placeholder {
+  color: var(--blue-dark
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  );
+  opacity: 0.6;
+}
+
+.search-input:focus {
+  outline-color: var(--blue-dark);
+  box-shadow: -0.5em 0.5em 0 var(--blue-dark);
+}
+
 
 /* =========================
    4) Main Grid (Cards)
