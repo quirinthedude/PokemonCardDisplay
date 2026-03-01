@@ -1,27 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokemoon-Cards-API</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/pokemon-icon.svg">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/pokemon-icon.svg">
-    <link rel="stylesheet" href="./css/standart.css">
-    <link rel="stylesheet" href="./css/styles.css">
-</head>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/pokemon-icon.svg"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/pokemon-icon.svg"
+    />
+    <link rel="stylesheet" href="./css/standart.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
 
-<body>
-   <header>
-    <img src="./assets/last.png" alt="" id="last-btn">
-    <img src="./assets/pokemon-logo.png" alt="" id="poke-btn">
-    <img src="./assets/next.png" alt="" id="next-btn">
-   </header>
-   <main>
-    <div id="pokemon-container"></div>
-    <dialog id="lightbox"></dialog>
-   </main>
+  <body>
+    <header>
+      <img src="./assets/last.png" alt="" id="last-btn" />
+      <img src="./assets/pokemon-logo.png" alt="" id="poke-btn" />
+      <img src="./assets/next.png" alt="" id="next-btn" />
+    </header>
+    <main>
+      <div class="search-wrap">
+        <input
+          type="search"
+          class="search-input"
+          placeholder="Search Pokémon…"
+        />
+      </div>
+
+      <div id="pokemon-container"></div>
+      <dialog
+        id="lightbox"
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="dialog-title"
+      >
+        <div class="dialog-shell">
+          <header id="dialog-header">
+            <h2 id="dialog-title">Bulbasaur</h2>
+            <form method="dialog">
+              <button id="dialog-close" value="cancel" aria-label="Close">
+                x
+              </button>
+            </form>
+          </header>
+
+          <nav id="dialog-tabs">
+            <button data-tab="types" class="is-active">Typen</button>
+            <button data-tab="stats">Stats</button>
+            <button data-tab="evo">Evolution</button>
+          </nav>
+
+          <section id="dialog-body">
+            <div class="tab tab-types is-active"></div>
+            <div class="tab tab-stats"></div>
+            <div class="tab tab-evo"></div>
+          </section>
+        </div>
+      </dialog>
+      <div class="test-dialog">
+        <div class="pokemon-box">
+          <div class="poke-menu">
+            <button>Element-Typen</button>
+            <button>Stats</button>
+            <button>Evolution</button>
+          </div>
+
+          <div class="dialog-img">
+            <img
+              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/1.png"
+              alt="name"
+            />
+          </div>
+
+          <div class="poke-info">
+            <ul>
+              <li><img src="./assets/types/bug.png" alt="" />Käfer</li>
+              <li><img src="./assets/types/dark.png" alt="" />Dunkelheit</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <a
+        href="https://commons.wikimedia.org/wiki/Category%3APok%C3%A9mon_types_icons?utm"
+      >
+        Type icons © partywhale (CC BY-SA 4.0)
+      </a>
+    </footer>
     <script type="module" src="./js/main.js"></script>
-</body>
-
+  </body>
 </html>
