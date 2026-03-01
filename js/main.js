@@ -45,8 +45,9 @@ function bindUI() {
   start.addEventListener("click", initPokemons);
 
   if (searchInput) {
-    searchInput.addEventListener("input", handlesearch);
+    // searchInput.addEventListener("input", handlesearch);
   }
+  bindCardClicks();
 }
 
 function updateNavUI() {
@@ -102,6 +103,7 @@ async function loadPokemons() {
     startIndex: pokeCount, 
     targetCount: PAGE_SIZE
   });
+  console.log(pokeArray);
 }
 
 // actions
@@ -129,3 +131,46 @@ async function initPokemons() {
   renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
 }
+
+function bindCardClicks() {
+  const container = document.getElementById("pokemon-container");
+  if (!container) return;
+
+  container.addEventListener("click", function(e) {
+    const card = e.target.closest(".pokemon-card");
+    if(!card) return;
+    if (card.classList.contains("empty")) return;
+
+    const name = card.dataset.name;
+    if (!name) return;
+
+    console.log("card click", name);
+    openDialog(name);
+  });
+}
+
+function openDialog(name) {
+
+}
+
+function initDialogTabs() {
+  const tabButtons = document.querySelectorAll("#dialog-tabs button");
+  const tabPanels = document.querySelectorAll("#dialog-body .tab");
+
+  tabButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const tabName = button.dataset.tab;
+      tabButtons.forEach(btn => btn.classList.remove("is-active"));
+      tabPanels.forEach(panel => panel.classList.remove("is-active"));
+      button.classList.add("is-active");
+      // activate fitting panel
+      const activePanel = document.querySelector(".tab-" + tabName);
+      if (activePanel) {
+        activePanel.classList.add("is-active");
+      }
+    });
+  });
+}
+
+// main procedure
+initDialogTabs();
