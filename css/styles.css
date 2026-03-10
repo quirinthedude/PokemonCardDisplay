@@ -30,6 +30,10 @@ body {
   margin: auto;
 }
 
+main {
+  perspective: 900px;
+}
+
 /* =========================
    3) Header / Navigation
    ========================= */
@@ -357,22 +361,161 @@ header {
    ========================= */
 
 dialog#lightbox {
+  width: min(900px, 92vw);
+  height: min(720px, 88vh);
+  margin: auto;
   border-radius: 16px;
-  padding: 24px;
-  padding: 2%;
+  padding: 0;
+  overflow: hidden;
   background: var(--white-soft);
 
   border: 3px solid var(--blue-dark);
+  border-radius: 16px;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
-  visibility: hidden;
+  transform: rotateX(-70deg) scale(0.9);
+  transform-origin: top;
+    transform: 180ms ease,
+    box-shadow 180ms ease;
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.8);
 }
+
+@keyframes dialog-open {
+  0%   { transform: rotateX(-70deg) scale(0.9); }
+  70%  { transform: rotateX(8deg) scale(1); }
+  100% { transform: rotateX(0deg) scale(1); }
+}
+
+dialog#lightbox[open] {
+  animation: dialog-open 320ms ease-out;
+  transform: rotateX(0deg) scale(1);
+  transition: transform 3000ms ease;
+}
+
+.dialog-img {
+  max-width: 240px;
+  width:  70%;
+  height: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  padding-top: 16%;
+  margin: auto;
+}
+
+.dialog-img::after {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  border: 3px solid var(--blue-mid);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+@keyframes scanner-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.2);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+.dialog-img img {
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  display: block;
+}
+
+.dialog-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+#dialog-title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+dialog[open] .dialog-img::after {
+  animation: scanner-ring 600ms ease-out;
+}
+
+#dialog-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: white;
+  cursor: pointer;
+}
+
+#dialog-tabs {
+display: flex;
+gap: 8px;
+padding: 12px 24px;
+border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+#dialog-tabs button[data-tab] {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: white;
+}
+
+#dialog-tabs button.is-active {
+  font-weight: 700;
+  background: var(--white-soft);
+}
+
+@keyframes tab-wobble {
+  0%   { transform: rotate(-6deg); }
+  50%  { transform: rotate(6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+#dialog-tabs button:hover {
+  animation: tab-wobble 220ms ease-out;
+}
+
+#dialog-body {
+  height: 100%;
+  flex: 1;
+  overflow: auto;
+  padding: 16px 24px;
+}
+
+
+
+.tab {
+  display: none;
+}
+
+.tab.is-active {
+  display: block;
+}
+
 /*********************************/
 .test-dialog {
   margin: 24px auto;
@@ -382,16 +525,16 @@ dialog::backdrop {
   background: var(--white-soft);
   box-shadow: 0 0px 0 rgba(0, 0, 0, 0.12);
   gap: 16px;
-  height: 80vh;
-  width: 80vw;
+  height: 80%;
+  width: 100%;
 }
 /****************************************************/
 
 .pokemon-box {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2%;
+  align-items: start;
 }
 
 .poke-info {
@@ -410,28 +553,18 @@ dialog::backdrop {
   width: auto;
 }
 
-.dialog-img {
-  width: 50%;
-  max-width: 260px;
-}
-
-.dialog-img img {
-  width: 100%;
-  height: auto;
-}
-
 .poke-menu {
   padding: 2%;
   width: 96%;
-  height: 18%;
+  height: auto;
   border: 0.2em solid var(--yellow-light);
   background: var(--yellow-main);
   display: flex;
   justify-content: space-around;
   gap: 2%;
   outline-offset: 0;
-
   border-radius: 1em;
+  margin: auto;
 }
 
 .poke-menu button {
@@ -446,46 +579,14 @@ dialog::backdrop {
   background: var(--yellow-main);
   border-radius: 1em;
   font-family: "Courier New", Courier, monospace;
+  height: 32px;
+  cursor: pointer;
 }
 
 .poke-menu button:hover {
-  background-color: var(--white-soft);
+  background-color: var(--yellow-light);
 }
 
-/* minimal dialoag, later merge it with poke-style*/
-
-dialog#lightbox {
-  width: min(900px, 92vw);
-  height: min(700px, 88vh);
-  padding: 0;
-}
-
-.dialog-shell {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-#dialog-header {
-  flex: 0 0 auto;
-}
-
-#dialog-tabs {
-  flex: 0 0 auto;
-}
-
-#dialog-body {
-  flex: 1 1 auto;
-  overflow: auto;
-}
-
-.tab {
-  display: none;
-}
-
-.tab.is-active {
-  display: block;
-}
 /* =========================
    9) Responsive
    ========================= */
@@ -494,6 +595,9 @@ dialog#lightbox {
   #pokemon-container {
     grid-template-columns: repeat(2, 38%);
     justify-content: center;
+  }
+  .pokemon-box {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -12,7 +12,7 @@ const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 // imports
-import { renderPokemons } from "./render.js";
+import { renderPokemons, renderDialog } from "./render.js";
 
 // eventlisteners
 
@@ -22,6 +22,7 @@ window.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   bindUI();
+  initDialogTabs();
   await loadBaseNames();
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
@@ -150,27 +151,46 @@ function bindCardClicks() {
 }
 
 function openDialog(name) {
+  const dialog = document.getElementById("lightbox");
+  const title =document.getElementById("dialog-title");
 
+  if (!dialog) return;
+
+  if (title) {
+    title.textContent = capitalize(name);
+  }
+  
+  const p = pokeArray.find(function (x) {return x && x.name === name });
+  if (p) renderDialog(p)
+
+  dialog.showModal();
 }
 
 function initDialogTabs() {
-  const tabButtons = document.querySelectorAll("#dialog-tabs button");
-  const tabPanels = document.querySelectorAll("#dialog-body .tab");
+  const tabs = document.getElementById("dialog-tabs");
+  const body = document.getElementById("dialog-body");
+  if (!tabs || !body) return;
 
-  tabButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const tabName = button.dataset.tab;
-      tabButtons.forEach(btn => btn.classList.remove("is-active"));
-      tabPanels.forEach(panel => panel.classList.remove("is-active"));
-      button.classList.add("is-active");
-      // activate fitting panel
-      const activePanel = document.querySelector(".tab-" + tabName);
-      if (activePanel) {
-        activePanel.classList.add("is-active");
-      }
+  if (tabs.dataset.bound === "1") return;
+  tabs.dataset.bound = "1";
+
+  tabs.addEventListener("click", function (e) {
+    const btn = e.target.closest("button[data-tab]");
+    if (!btn) return;
+
+    const tabName = btn.dataset.tab;
+
+    tabs.querySelectorAll("button[data-tab]").forEach(function (b) {
+      b.classList.toggle("is-active", b ===btn);
+    });
+    body.querySelectorAll(".tab").forEach(function (panel) {
+      panel.classList.toggle("is-active", panel.classList.contains("tab-" + tabName));
     });
   });
 }
 
-// main procedure
-initDialogTabs();
+// helpers
+function capitalize(s) {
+  if (!s) return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}

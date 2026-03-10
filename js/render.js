@@ -97,8 +97,49 @@ function formatTypes(types) {
 
   for (let i = 0; i < types.length; i++) {
     const name = types[i];
-    const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
-    text += (i === 0 ? "" : " · ") + capitalized;
+    text += (i === 0 ? "" : " · ") + capitalize(name);
   }
   return text;
+}
+
+export function renderDialog(p) {
+  const typesPanel = document.querySelector("#dialog-body .tab-types");
+  const statsPanel = document.querySelector("#dialog-body .tab-stats");
+  const evoPanel = document.querySelector("#dialog-body .tab-evo");
+  if (!typesPanel || !statsPanel || !evoPanel) return;
+
+  const types = getTypeNames(p);
+
+  // Types Panel (dein Mock: Liste mit Icons)
+  typesPanel.innerHTML = `
+    <div class="pokemon-box">
+      <div class="dialog-img">
+        <img src="${getDialogImage(p)}" alt="${p.name}">
+      </div>
+
+      <div class="poke-info">
+        <ul>
+          ${types.map(t => `<li><img src="./assets/types/${t}.png" alt="${t}"> ${t}</li>`).join("")}
+        </ul>
+      </div>
+    </div>
+  `;
+
+  // Platzhalter erstmal
+  statsPanel.innerHTML = `<p>Stats coming soon…</p>`;
+  evoPanel.innerHTML = `<p>Evolution coming soon…</p>`;
+}
+
+function getDialogImage(p) {
+  return (
+    p.sprites?.other?.["official-artwork"]?.front_default ??
+    p.sprites?.front_default ??
+    ""
+  );
+}
+
+// helpers
+function capitalize(s) {
+  if (!s) return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
