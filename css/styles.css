@@ -516,6 +516,18 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.6);
   display: block;
 }
 
+/* stats */
+.pokemon-stats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pokemon-stats li {
+  margin-bottom: 8px;
+  font-family: monospace;
+}
+
 /*********************************/
 .test-dialog {
   margin: 24px auto;

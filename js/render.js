@@ -126,7 +126,19 @@ export function renderDialog(p) {
   `;
 
   // Platzhalter erstmal
-  statsPanel.innerHTML = `<p>Stats coming soon…</p>`;
+  // stats
+  const stats = p.stats;
+  
+  statsPanel.innerHTML = `
+    <ul class="pokemon-stats">
+      ${stats.map(s => `
+        <li>
+          <strong>${capitalize(s.stat.name)}</strong>: ${s.base_stat}
+        </li>
+      `).join("")}
+    </ul>
+  `;
+  // evolution
   evoPanel.innerHTML = `<p>Evolution coming soon…</p>`;
 }
 
