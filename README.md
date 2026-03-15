@@ -1,109 +1,98 @@
-# Pokémon Card Display – Pagination, Render Pipeline & UI State
+# Pokémon Card Display
 
-Frontend-Projekt im Rahmen der **Developer Akademie – Modul 8**.  
-Der Fokus liegt auf einer **stabilen Pagination-Logik**, klarer **Zustandsverwaltung** und einer sauberen **Trennung von Controller-Logik, Rendering und Styling**.
+A JavaScript web application that displays Pokémon cards using the public PokéAPI.
 
-Das Projekt dient primär dem Lernen des strukturierten Umgangs mit einer externen API (PokéAPI) und nicht der vollständigen Abbildung aller Pokémon-Daten.
-
----
-
-## Projektziel
-
-Darstellung von Pokémon-Karten in **paginierten Schritten**  
-(aktuell: **20 Pokémon pro Seite**), basierend auf:
-
-- einer lokalen Index-Datei (`base_names.json`)
-- der öffentlichen **PokéAPI**
-
-Der Schwerpunkt liegt **nicht** auf komplexem Design,  
-sondern auf:
-
-- konsistenter Zustandsführung
-- robuster Render-Pipeline
-- gut lesbarer, wartbarer Frontend-Architektur
+The project focuses on building a clean frontend architecture with clear state management and a structured render pipeline.
 
 ---
 
-## Architekturüberblick
+## Screenshot
 
-### `index.html`
-- Statische Grundstruktur
-- Container für Pokémon-Karten
-- Navigation (Start / Last / Next)
-- Scripts als ES-Module eingebunden
+![Pokemon Card Display](assets/pokemon.png)
 
 ---
 
-### `css/`
-- Visuelles Styling
-- Reine Reaktion auf Zustände (keine Logik)
-- Typ-Darstellung über `data-type` Attribute
-- UI-Zustände (`.disabled`, `.empty`) rein über CSS
+## Features
+
+- paginated Pokémon card display (20 per page)
+- dynamic API data fetching
+- responsive card layout
+- clean separation of controller, rendering and styling
+- stable pagination based on a local index file
 
 ---
 
-### `js/main.js`
-- Zentrale Applikations- & Controller-Logik
-- `pokeCount` als **Single Source of Truth** für Pagination
-- Fetch-Logik & Fehler-Policy
-- Übergibt **Daten + PAGE_SIZE** an das Rendering (keine Globals)
+## Technologies
+
+- JavaScript (ES6)
+- HTML
+- CSS
+- REST API (PokéAPI)
 
 ---
 
-### `js/render.js`
-- Reines DOM-Rendering (keine Fetches, kein State)
-- Erzeugt pro Pokémon eine eigene Card
-- Setzt `data-type` für CSS-basierte Darstellung
-- Klar strukturierte Helper-Funktionen (Lesbarkeit vor One-Linern)
+## What I learned
+
+This project helped me practice:
+
+- working with REST APIs
+- building a structured frontend architecture
+- separating controller logic from rendering
+- implementing stable pagination logic
+- managing UI state in a predictable way
 
 ---
 
-### `json/base_names.json`
-- Lokale Index-Datei für Pagination
-- Entkoppelt UI-Logik von API-Verfügbarkeit
-- Enthält **keine UI- oder Style-Daten**
+## Project Architecture
+
+### index.html
+Static layout and containers for the Pokémon cards and navigation.
+
+### css/
+Pure styling layer reacting to UI state.  
+Type styling is handled via `data-type` attributes.
+
+### js/main.js
+Main controller logic.
+
+Responsible for:
+
+- pagination state
+- API requests
+- data orchestration
+
+`pokeCount` acts as the **single source of truth** for pagination.
+
+### js/render.js
+Pure DOM rendering layer.
+
+- no API logic
+- no state management
+- creates Pokémon cards and attaches UI attributes
+
+### json/base_names.json
+Local index file used for stable pagination.
+
+This prevents the UI logic from depending on API availability.
+
+### scripts/
+Python helper scripts used to generate or analyze the JSON data.
+
+These scripts are **not part of the runtime** and exist only for development and learning purposes.
 
 ---
 
-### `scripts/`
-- Python-Hilfsskripte zur Generierung / Analyse der JSON-Daten
-- **Nicht Teil der Runtime**
-- Dienen ausschließlich dem Build- und Lernprozess
+## Design Decisions
+
+- single pagination state (`pokeCount`)
+- pagination derived from `PAGE_SIZE`
+- strict separation between controller and rendering
+- CSS reacts to attributes instead of JavaScript logic
+- failed API requests are skipped (skip & continue)
 
 ---
 
-## Zentrale Designentscheidungen
+## Data Source
 
-- **Ein Zustand** (`pokeCount`) statt verteilter Flags
-- Pagination vollständig aus `PAGE_SIZE` abgeleitet
-- Rendering strikt vom Controller getrennt
-- CSS reagiert auf Attribute (`data-type`), nicht auf JS-Logik
-- Fehler beim Fetch werden übersprungen (skip & continue), kein Retry
-
----
-
-## Typ-Darstellung
-
-- JavaScript bestimmt den **Primary Type** eines Pokémon
-- Dieser wird als `data-type` an der Card gesetzt
-- CSS übernimmt:
-  - Hintergrundfarbe
-  - Typ-Icon (CSS-only, Unicode)
-
-Mehrfach-Typen sind aktuell **bewusst nicht visuell kombiniert**,  
-um Rendering und Styling klar und nachvollziehbar zu halten.
-
----
-
-## Datenquellen
-
-- PokéAPI: https://pokeapi.co  
-- Lokale, vorverarbeitete JSON-Dateien für stabile Pagination
-
----
-
-## Hinweis
-
-Dieses Projekt dient dem Lernen und der strukturellen Klarheit.  
-Erweiterungen wie Multi-Type-Rendering, Suche, Accessibility-Feinschliff  
-oder weitergehende UI-Themes sind bewusst offen gelassen.
+PokéAPI  
+https://pokeapi.co
