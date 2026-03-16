@@ -30,6 +30,40 @@
       ],
       "status": "solid",
       "level": "intermediate"
+    },
+    {
+      "id": "CSS-001",
+      "topic": "Decorative UI via data attributes and pseudo-elements",
+      "date": "2026-03-16",
+      "files": [
+        {
+          "path": "js/render.js",
+          "functions": ["renderPokemons"]
+        },
+        {
+          "path": "css/styles.css",
+          "functions": []
+        }
+      ],
+      "problem": "How to display a pokemon primary type badge on cards without adding extra HTML elements.",
+      "pattern": "dataset in JS -> CSS attribute selector -> ::after pseudo-element",
+      "example": "card.dataset.type = primaryType; .pokemon-card[data-type=\"fire\"]::after { content: \"🔥\"; }",
+      "notes": [
+        "JavaScript attached semantic metadata to the card via data-type.",
+        "CSS used attribute selectors to react to that metadata.",
+        "The ::after pseudo-element created a decorative badge without modifying the HTML structure.",
+        "This pattern works well for decorative UI elements such as badges, icons, or status indicators.",
+        "It becomes less appropriate when the information represents core content rather than decoration.",
+        "In this project, the pattern was later removed because pokemon types are real content in the dialog view and therefore better rendered as HTML."
+      ],
+      "related": [
+        "dataset attributes",
+        "CSS attribute selectors",
+        "pseudo-elements",
+        "decorative UI vs semantic content"
+      ],
+      "status": "solid",
+      "level": "intermediate"
     }
   ]
 }
