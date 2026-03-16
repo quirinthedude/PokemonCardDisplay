@@ -1,0 +1,20 @@
+{
+  "id": "DOM-001",
+  "topic": "createElement + appendChild",
+  "date": "2026-03-16",
+  "files": [
+    {
+      "path": "js/render.js",
+      "functions": ["renderPokemons", "renderImage", "arrayFallback"]
+    }
+  ],
+  "problem": "render pokemon cards dynamically",
+  "pattern": "createElement -> configure -> appendChild",
+  "example": "const card = document.createElement('div'); container.appendChild(card);",
+  "notes": "A created DOM node exists in memory first. It becomes visible only after appendChild inserts it into the DOM tree.",
+  "related": [
+    "DocumentFragment",
+    "event delegation",
+    "innerHTML vs DOM API"
+  ]
+}
