@@ -1,20 +1,35 @@
 {
-  "id": "DOM-001",
-  "topic": "createElement + appendChild",
-  "date": "2026-03-16",
-  "files": [
+  "project": "pokemon-card-display",
+  "description": "Technical lesson log for deeper side-paths explored during the Pokemon Card Display project.",
+  "lessons": [
     {
-      "path": "js/render.js",
-      "functions": ["renderPokemons", "renderImage", "arrayFallback"]
+      "id": "DOM-001",
+      "topic": "createElement and appendChild",
+      "date": "2026-03-16",
+      "files": [
+        {
+          "path": "js/render.js",
+          "functions": ["renderPokemons", "renderImage", "arrayFallback"]
+        }
+      ],
+      "problem": "How to render pokemon cards dynamically without relying only on innerHTML string templating.",
+      "pattern": "createElement -> configure node -> render inner content -> appendChild",
+      "example": "const card = document.createElement('div'); card.classList.add('pokemon-card'); container.appendChild(card);",
+      "notes": [
+        "createElement creates a DOM node in memory.",
+        "The node is not yet visible in the page after creation.",
+        "appendChild inserts the node into the DOM tree, making it visible inside its parent container.",
+        "dataset can attach useful metadata like data-name without hardcoding it directly into the HTML string.",
+        "For this small project, innerHTML would also have been a valid practical solution. This lesson was explored to understand the DOM more deeply, not because the simpler approach was wrong."
+      ],
+      "related": [
+        "DocumentFragment",
+        "event delegation",
+        "innerHTML vs DOM API",
+        "dataset attributes"
+      ],
+      "status": "solid",
+      "level": "intermediate"
     }
-  ],
-  "problem": "render pokemon cards dynamically",
-  "pattern": "createElement -> configure -> appendChild",
-  "example": "const card = document.createElement('div'); container.appendChild(card);",
-  "notes": "A created DOM node exists in memory first. It becomes visible only after appendChild inserts it into the DOM tree.",
-  "related": [
-    "DocumentFragment",
-    "event delegation",
-    "innerHTML vs DOM API"
   ]
 }
