@@ -67,7 +67,6 @@ async function loadBaseNames() {
   const nameJSON = await fetch("./json/base_names.json");
   const data = await nameJSON.json();
   baseNames = data.bases;
-  console.log(baseNames);
   maxPokemons = baseNames.length > 0 ? baseNames.length : MAX_POKEMONS;
 }
 
@@ -104,7 +103,6 @@ async function loadPokemons() {
     startIndex: pokeCount, 
     targetCount: PAGE_SIZE
   });
-  console.log(pokeArray);
 }
 
 // actions
@@ -137,22 +135,20 @@ function bindCardClicks() {
   const container = document.getElementById("pokemon-container");
   if (!container) return;
 
-  container.addEventListener("click", function(e) {
+  container.addEventListener("click", function (e) {
     const card = e.target.closest(".pokemon-card");
     if(!card) return;
     if (card.classList.contains("empty")) return;
 
     const name = card.dataset.name;
     if (!name) return;
-
-    console.log("card click", name);
     openDialog(name);
   });
 }
 
 function openDialog(name) {
   const dialog = document.getElementById("lightbox");
-  const title =document.getElementById("dialog-title");
+  const title = document.getElementById("dialog-title");
 
   if (!dialog) return;
 
@@ -160,7 +156,8 @@ function openDialog(name) {
     title.textContent = capitalize(name);
   }
   
-  const p = pokeArray.find(function (x) {return x && x.name === name });
+  const p = pokeArray.find(function (pokemon) {return pokemon?.name === name });
+  // older style: {return pokemon && pokemon.name === name}
   if (p) renderDialog(p)
 
   dialog.showModal();

@@ -2,10 +2,13 @@ export function renderPokemons(pokeArray, pageSize) {
   const container = document.getElementById("pokemon-container");
   if (!container) return;
 
+  // clear previous render
   container.innerHTML = "";
 
   for (let i = 0; i < pageSize; i++) {
     const p = pokeArray[i];
+
+    // create a DOM node <div> which represents a single pokemon card
     const card = document.createElement("div");
     card.classList.add("pokemon-card");
 
@@ -13,16 +16,18 @@ export function renderPokemons(pokeArray, pageSize) {
       arrayFallback(card, container);
       continue;
     }
+
     const { name, img } = pokemonImageDef(p);
+
+    // attach pokemon name as dataset attribute
+    // results in HTML: <div data-name="bulbasaur">
     card.dataset.name = name;
-    // not adding data-name ${name} directly into innerHTML, helps
-    // making the flexitive to changes and easyfies handling
-    const types = getTypeNames(p);
-    const primaryType = getPrimaryType(types);
-    card.dataset.type = primaryType;
-    // HTML: data-type="{element=type}"
-    const typeText = formatTypes(types);
-    renderImage(card, name, img, types);
+
+    // render inner structure (image + name)
+    renderImage(card, name, img);
+
+    // appendChild inserts the node into the DOM tree,
+    // making the card visible in the container
     container.appendChild(card);
   }
 }
@@ -37,21 +42,21 @@ function arrayFallback(card, container) {
 
 function pokemonImageDef(p) {
   const name = p.name ?? "unknown";
+  // fallback if there is no name in the API, eg empty array
   const img =
     p.sprites?.other?.["official-artwork"]?.front_default ??
     p.sprites?.front_default ??
-    "";
+    ""; // make sure there is no undefined (stability)
   return { name, img };
 }
 
-function renderImage(card, name, img, types) {
+function renderImage(card, name, img) {
   card.innerHTML = `
     <div class="poke-img-wrap">
     ${img ? `<img src="${img}" alt="${name}">` : `<div class="img-placeholder"></div>`}
     </div>
     <div class="poke-name">${name}</div>
-    <div class="poke-types">
-      ${renderTypeIcons(types)}
+
     </div>
     `;
 }
@@ -119,7 +124,7 @@ export function renderDialog(p) {
 
       <div class="poke-info">
         <ul>
-          ${types.map(t => `<li><img src="./assets/types/${t}.png" alt="${t}"> ${t}</li>`).join("")}
+          ${types.map((t) => `<li><img src="./assets/types/${t}.png" alt="${t}"> ${t}</li>`).join("")}
         </ul>
       </div>
     </div>
@@ -128,14 +133,18 @@ export function renderDialog(p) {
   // Platzhalter erstmal
   // stats
   const stats = p.stats;
-  
+
   statsPanel.innerHTML = `
     <ul class="pokemon-stats">
-      ${stats.map(s => `
+      ${stats
+        .map(
+          (s) => `
         <li>
           <strong>${capitalize(s.stat.name)}</strong>: ${s.base_stat}
         </li>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </ul>
   `;
   // evolution
