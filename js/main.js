@@ -100,8 +100,8 @@ async function loadPokemonBatch({ startIndex, targetCount }) {
 
 async function loadPokemons() {
   pokeArray = await loadPokemonBatch({
-    startIndex: pokeCount, 
-    targetCount: PAGE_SIZE
+    startIndex: pokeCount,
+    targetCount: PAGE_SIZE,
   });
 }
 
@@ -112,14 +112,32 @@ async function loadEvolutionChain(p) {
   const speciesResponse = await fetch(p.species.url);
   const speciesData = await speciesResponse.json();
 
-
   const evoUrl = speciesData?.evolution_chain?.url;
   if (!evoUrl) return []; // again handshake-fallback
 
   const evoResponse = await fetch(evoUrl);
   const evoData = await evoResponse.json();
 
-  return extractEvolutionNames(evoData.chain);
+  return extractEvolutionEntries(evoData.chain);
+}
+
+async function enrichEvolutionEntries(entries) {
+  const result = [];
+
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+
+    const response = await fetch(BASE_URL + entry.name);
+    const data = await response.json();
+
+    result.push({
+      name: entry.name,
+      img: data.sprites?.other?.["official-artwork"]?.front_default ?? 
+        data.sprites?.front_default ?? 
+        ""
+    });
+  }
+  return result;
 }
 
 // actions
@@ -154,7 +172,7 @@ function bindCardClicks() {
 
   container.addEventListener("click", function (e) {
     const card = e.target.closest(".pokemon-card");
-    if(!card) return;
+    if (!card) return;
     if (card.classList.contains("empty")) return;
 
     const name = card.dataset.name;
@@ -172,17 +190,20 @@ async function openDialog(name) {
   if (title) {
     title.textContent = capitalize(name);
   }
-  
+
   const p = pokeArray.find(function (pokemon) {
     return pokemon?.name === name;
   });
   // older style: {return pokemon && pokemon.name === name}
-  
+
   if (p) {
     renderDialog(p);
 
-    const chainSpecies = await loadEvolutionChain(p);
-    renderEvolution(chainSpecies);
+    // const chainSpecies = await loadEvolutionChain(p);
+    // renderEvolution(chainSpecies);
+    const evoEntries = await loadEvolutionChain(p);
+    const evoDisplayData = await enrichEvolutionEntries(evoEntries);
+    renderEvolution(evoDisplayData);
   }
 
   dialog.showModal();
@@ -203,10 +224,13 @@ function initDialogTabs() {
     const tabName = btn.dataset.tab;
 
     tabs.querySelectorAll("button[data-tab]").forEach(function (b) {
-      b.classList.toggle("is-active", b ===btn);
+      b.classList.toggle("is-active", b === btn);
     });
     body.querySelectorAll(".tab").forEach(function (panel) {
-      panel.classList.toggle("is-active", panel.classList.contains("tab-" + tabName));
+      panel.classList.toggle(
+        "is-active",
+        panel.classList.contains("tab-" + tabName),
+      );
     });
   });
 }
@@ -217,12 +241,16 @@ function capitalize(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function extractEvolutionNames(chain) {
+function extractEvolutionEntries(chain) {
   const names = [];
   let current = chain;
 
   while (current) {
-    names.push(current.species.name);
+    names.push({
+      name: current.species.name,
+      speciesUrl: current.species.url,
+    });
+
     current = current.evolves_to[0];
   }
 

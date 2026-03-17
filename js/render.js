@@ -125,17 +125,26 @@ function getDialogImage(p) {
   );
 }
 
-export function renderEvolution(chainSpecies) {
+export function renderEvolution(evoData) {
   const evoPanel = document.querySelector("#dialog-body .tab-evo");
   if (!evoPanel) return;
 
-  let html = "<ul>";
+  let html = '<div class="evo-chain">';
 
-  chainSpecies.forEach(function (name){
-    html += `<li>${capitalize(name)}</li>`;
+    evoData.forEach(function (pokemon, index){
+    html += `
+      <div class="evo-stage">
+        <img src="${pokemon.img}" alt="${pokemon.name}">
+        <p>${capitalize(pokemon.name)}</p>
+      </div>
+    `;
+    if (index < evoData.length -1) {
+        html += `<div class="evo-arrow">→</div>`;
+    }
   });
 
-  html += "</ul>";
+  html += "</div>";
+
   evoPanel.innerHTML = html;
 }
 
