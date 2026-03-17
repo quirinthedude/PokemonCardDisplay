@@ -12,7 +12,7 @@ const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 // imports
-import { renderPokemons, renderDialog } from "./render.js";
+import { renderPokemons, renderDialog, renderEvolution } from "./render.js";
 
 // eventlisteners
 
@@ -105,6 +105,23 @@ async function loadPokemons() {
   });
 }
 
+async function loadEvolutionChain(p) {
+  if (!p?.species?.url) return []; // handshake p.species.url
+  //                  otherwise return empty array
+
+  const speciesResponse = await fetch(p.species.url);
+  const speciesData = await speciesResponse.json();
+
+
+  const evoUrl = speciesData?.evolution_chain?.url;
+  if (!evoUrl) return []; // again handshake-fallback
+
+  const evoResponse = await fetch(evoUrl);
+  const evoData = await evoResponse.json();
+
+  return extractEvolutionNames(evoData.chain);
+}
+
 // actions
 async function nextPokemons() {
   if (pokeCount + PAGE_SIZE >= maxPokemons) return;
@@ -146,7 +163,7 @@ function bindCardClicks() {
   });
 }
 
-function openDialog(name) {
+async function openDialog(name) {
   const dialog = document.getElementById("lightbox");
   const title = document.getElementById("dialog-title");
 
@@ -156,9 +173,17 @@ function openDialog(name) {
     title.textContent = capitalize(name);
   }
   
-  const p = pokeArray.find(function (pokemon) {return pokemon?.name === name });
+  const p = pokeArray.find(function (pokemon) {
+    return pokemon?.name === name;
+  });
   // older style: {return pokemon && pokemon.name === name}
-  if (p) renderDialog(p)
+  
+  if (p) {
+    renderDialog(p);
+
+    const chainSpecies = await loadEvolutionChain(p);
+    renderEvolution(chainSpecies);
+  }
 
   dialog.showModal();
 }
@@ -190,4 +215,16 @@ function initDialogTabs() {
 function capitalize(s) {
   if (!s) return "";
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function extractEvolutionNames(chain) {
+  const names = [];
+  let current = chain;
+
+  while (current) {
+    names.push(current.species.name);
+    current = current.evolves_to[0];
+  }
+
+  return names;
 }

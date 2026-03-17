@@ -61,24 +61,6 @@ function renderImage(card, name, img) {
     `;
 }
 
-function renderTypeIcons(types) {
-  console.log("types in renderImage:", types, Array.isArray(types));
-  let html = "";
-
-  for (let i = 0; i < types.length; i++) {
-    const type = types[i];
-    html += `
-      <img
-        class="type-icon"
-        src="assets/types/${type}.png"
-        alt="${type}"
-        title="${type}"
-      >
-    `;
-  }
-
-  return html;
-}
 
 function getTypeNames(pokemon) {
   const types = [];
@@ -90,21 +72,6 @@ function getTypeNames(pokemon) {
   }
 
   return types;
-}
-
-function getPrimaryType(types) {
-  if (types.length === 0) return "unknown";
-  return types[0];
-}
-
-function formatTypes(types) {
-  let text = "";
-
-  for (let i = 0; i < types.length; i++) {
-    const name = types[i];
-    text += (i === 0 ? "" : " · ") + capitalize(name);
-  }
-  return text;
 }
 
 export function renderDialog(p) {
@@ -130,7 +97,6 @@ export function renderDialog(p) {
     </div>
   `;
 
-  // Platzhalter erstmal
   // stats
   const stats = p.stats;
 
@@ -157,6 +123,20 @@ function getDialogImage(p) {
     p.sprites?.front_default ??
     ""
   );
+}
+
+export function renderEvolution(chainSpecies) {
+  const evoPanel = document.querySelector("#dialog-body .tab-evo");
+  if (!evoPanel) return;
+
+  let html = "<ul>";
+
+  chainSpecies.forEach(function (name){
+    html += `<li>${capitalize(name)}</li>`;
+  });
+
+  html += "</ul>";
+  evoPanel.innerHTML = html;
 }
 
 // helpers
