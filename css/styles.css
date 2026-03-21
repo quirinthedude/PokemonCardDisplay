@@ -448,14 +448,21 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.6);
 }
 
 .poke-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 2%;
   width: 96%;
-  height: auto;
+  height: 100%;
   border: 0.2em solid var(--yellow-light);
   background: var(--yellow-main);
   gap: 2%;
   outline-offset: 0;
   border-radius: 1em;
+}
+
+.poke-info ul {
+  padding-top: 5%;
 }
 
 .poke-info img {

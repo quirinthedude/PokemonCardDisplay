@@ -61,7 +61,6 @@ function renderImage(card, name, img) {
     `;
 }
 
-
 function getTypeNames(pokemon) {
   const types = [];
 
@@ -90,6 +89,7 @@ export function renderDialog(p) {
       </div>
 
       <div class="poke-info">
+        <h2>Attack/Defense-Types:</h2>
         <ul>
           ${types.map((t) => `<li><img src="./assets/types/${t}.png" alt="${t}"> ${t}</li>`).join("")}
         </ul>
@@ -101,17 +101,26 @@ export function renderDialog(p) {
   const stats = p.stats;
 
   statsPanel.innerHTML = `
-    <ul class="pokemon-stats">
-      ${stats
-        .map(
-          (s) => `
-        <li>
-          <strong>${capitalize(s.stat.name)}</strong>: ${s.base_stat}
-        </li>
-      `,
-        )
-        .join("")}
-    </ul>
+    <div class="pokemon-box">
+      <div class="dialog-img">
+        <img src="${getDialogImage(p)}" alt="${p.name}">
+      </div>
+      <div class="poke-info">
+        <h2>Stats</h2>
+        <ul class="pokemon-stats">
+          ${stats
+            .map(
+              (s) => `
+           <li>
+             <strong>${capitalize(s.stat.name)}</strong>: ${s.base_stat}
+           </li>
+          `,
+            )
+            .join("")}
+        </ul>
+    </div>
+  </div>
+
   `;
   // evolution
   evoPanel.innerHTML = `<p>Evolution coming soon…</p>`;
@@ -131,15 +140,15 @@ export function renderEvolution(evoData) {
 
   let html = '<div class="evo-chain">';
 
-    evoData.forEach(function (pokemon, index){
+  evoData.forEach(function (pokemon, index) {
     html += `
       <div class="evo-stage">
         <img src="${pokemon.img}" alt="${pokemon.name}">
         <p>${capitalize(pokemon.name)}</p>
       </div>
     `;
-    if (index < evoData.length -1) {
-        html += `<div class="evo-arrow">→</div>`;
+    if (index < evoData.length - 1) {
+      html += `<div class="evo-arrow">→</div>`;
     }
   });
 
