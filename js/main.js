@@ -8,6 +8,8 @@ let next; //  document.getElementById("next-btn")
 let last; // document.getElementById("last-btn")
 let start; // document.getElementById("poke-btn") all done in bindUI()
 let searchInput;
+let autocompleteDropdown = document.querySelector(".autocomplete-dropdown");
+
 const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
@@ -46,8 +48,10 @@ function bindUI() {
   start.addEventListener("click", initPokemons);
 
   if (searchInput) {
-    // searchInput.addEventListener("input", handlesearch);
+    searchInput.addEventListener("input", handleSearchInput);
+    searchInput.addEventListener("keydown", handleSearchKeydown);
   }
+  document.addEventListener("click", handleOutsideClick);
   bindCardClicks();
 }
 
@@ -132,9 +136,10 @@ async function enrichEvolutionEntries(entries) {
 
     result.push({
       name: entry.name,
-      img: data.sprites?.other?.["official-artwork"]?.front_default ?? 
-        data.sprites?.front_default ?? 
-        ""
+      img:
+        data.sprites?.other?.["official-artwork"]?.front_default ??
+        data.sprites?.front_default ??
+        "",
     });
   }
   return result;
@@ -191,16 +196,27 @@ async function openDialog(name) {
     title.textContent = capitalize(name);
   }
 
-  const p = pokeArray.find(function (pokemon) {
-    return pokemon?.name === name;
+  let p = pokeArray.find(function (pokemon) {
+    return pokemon?.name === name; // handshake pokemon.name
   });
-  // older style: {return pokemon && pokemon.name === name}
+
+  if (!p) {
+    // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
+    try {
+      const response = await fetch(BASE_URL + name);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
+      }
+      p = await response.json();
+    } catch (err) {
+      console.warn(`Skipped: ${name} - `, err);
+      return; // Don't show dialog if fetch fails
+    }
+  }
 
   if (p) {
     renderDialog(p);
 
-    // const chainSpecies = await loadEvolutionChain(p);
-    // renderEvolution(chainSpecies);
     const evoEntries = await loadEvolutionChain(p);
     const evoDisplayData = await enrichEvolutionEntries(evoEntries);
     renderEvolution(evoDisplayData);
@@ -233,6 +249,66 @@ function initDialogTabs() {
       );
     });
   });
+}
+
+function handleSearchInput() {
+  const query = searchInput.value.trim().toLowerCase(); // easier to compare
+  const dropdown = autocompleteDropdown;
+
+  if (!dropdown) return;
+  dropdown.innerHTML = "";
+
+  if (query.length >= 3) {
+    const suggestions = baseNames
+      .filter((name) => name.toLowerCase().startsWith(query))
+      .slice(0, 10);
+
+    if (suggestions.length > 0) {
+      const ul = document.createElement("ul");
+      suggestions.forEach((name) => {
+        const li = document.createElement("li");
+        li.textContent = capitalize(name);
+        li.addEventListener("click", () => selectSuggestion(name));
+        ul.appendChild(li); // add click listener to each suggestion
+      });
+      dropdown.appendChild(ul); // add suggestions to dropdown
+      dropdown.style.display = "block";
+    } else {
+      dropdown.style.display = "none"; // hide if no suggestions
+    }
+  } else {
+    dropdown.style.display = "none"; // same same but different: if too short
+  }
+}
+
+function selectSuggestion(name) {
+  searchInput.value = name; // set input to selected name
+  autocompleteDropdown.style.display = "none"; // hide dropdown
+  performSearch(name); // trigger search action
+}
+
+function handleSearchKeydown (event) {
+  if (event.key === "Enter") {
+    const query = searchInput.value.trim();
+    autocompleteDropdown.style.display = "none"; // hide dropdown on enter
+    if (query) {
+      performSearch(query);
+    }
+  }
+}
+
+function handleOutsideClick(event) {
+  if (!searchInput.contains(event.target) && !autocompleteDropdown.contains(event.target)) {
+    autocompleteDropdown.style.display = "none"; // hide dropdown if click outside
+  }
+}
+
+function performSearch(query) {
+  const pokemon = baseNames.find(name => name.toLowerCase() === query.toLowerCase());
+
+  if (pokemon) {
+    openDialog(pokemon);
+  }
 }
 
 // helpers

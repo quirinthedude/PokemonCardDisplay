@@ -87,8 +87,8 @@ header {
    ========================= */
 
 .search-wrap {
-  display: flex;
-  justify-content: center;
+  position: relative;
+  width: fit-content;
   margin: 2% 0;
 }
 
@@ -128,6 +128,41 @@ header {
   border-color: var(--white-soft);
   outline-color: var(--blue-mid);
   box-shadow: -0.5em 0.5em 0 var(--blue-dark);
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 60%;
+  max-width: 420px;
+  min-width: 240px;
+  background: var(--white-soft);
+  border: 0.3em solid var(--blue-mid);
+  border-top: none;
+  border-radius: 0 0 1em 1em;
+  box-shadow: -0.35em 0.35em 0 var(--blue-dark);
+}
+
+.autocomplete-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.autocomplete-dropdown li {
+  padding: 6px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--white-soft);
+}
+
+.autocomplete-dropdown li:hover {
+  background: var(--yellow-light);
+}
+
+.autocomplete-dropdown li:last-child {
+  border-bottom: none;
 }
 
 /* =========================
@@ -217,7 +252,6 @@ header {
   background: #e9eef7;
 }
 
-
 /* =========================
    6) Dialog (Lightbox)
    ========================= */
@@ -236,7 +270,8 @@ dialog#lightbox {
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
   transform: rotateX(-70deg) scale(0.9);
   transform-origin: top;
-    transform: 180ms ease,
+  transform:
+    180ms ease,
     box-shadow 180ms ease;
 }
 
@@ -245,9 +280,15 @@ dialog::backdrop {
 }
 
 @keyframes dialog-open {
-  0%   { transform: rotateX(-70deg) scale(0.9); }
-  70%  { transform: rotateX(8deg) scale(1); }
-  100% { transform: rotateX(0deg) scale(1); }
+  0% {
+    transform: rotateX(-70deg) scale(0.9);
+  }
+  70% {
+    transform: rotateX(8deg) scale(1);
+  }
+  100% {
+    transform: rotateX(0deg) scale(1);
+  }
 }
 
 dialog#lightbox[open] {
@@ -258,7 +299,7 @@ dialog#lightbox[open] {
 
 .dialog-img {
   max-width: 240px;
-  width:  70%;
+  width: 70%;
   height: auto;
   position: relative;
   display: flex;
@@ -333,10 +374,10 @@ dialog[open] .dialog-img::after {
 }
 
 #dialog-tabs {
-display: flex;
-gap: 8px;
-padding: 12px 24px;
-border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
 }
 
 #dialog-tabs button[data-tab] {
@@ -388,9 +429,15 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.6);
 }
 
 @keyframes tab-wobble {
-  0%   { transform: rotate(-6deg); }
-  50%  { transform: rotate(6deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 #dialog-tabs button:hover {
@@ -403,8 +450,6 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.6);
   overflow: auto;
   padding: 16px 24px;
 }
-
-
 
 .tab {
   display: none;
