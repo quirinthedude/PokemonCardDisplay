@@ -88,16 +88,15 @@ header {
 
 .search-wrap {
   position: relative;
-  width: fit-content;
-  margin: 2% 0;
+  width: 60%;
+  max-width: 420px;
+  min-width: 240px;
+  margin: 2% auto;
 }
 
 .search-input {
-  width: 60%;
+  width: 100%;
   height: 32px;
-  max-width: 420px;
-  min-width: 240px;
-
   padding: 2%;
   font-size: 1rem;
   font-weight: 600;
@@ -107,12 +106,11 @@ header {
 
   outline: 0.2em solid var(--white-soft); /* inner border */
   border: 0.3em solid var(--blue-mid); /* outer border */
+  border-radius: 1em 1em 0 0;
   outline-offset: 0;
 
-  border-radius: 1em;
-
   /* fluid shadow (relative to font-size) */
-  box-shadow: -0.35em 0.35em 0 var(--blue-dark);
+  /* box-shadow: -0.35em 0.35em 0 var(--blue-dark); */
 
   transition:
     box-shadow 120ms ease,
@@ -134,15 +132,20 @@ header {
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
-  width: 60%;
-  max-width: 420px;
-  min-width: 240px;
-  background: var(--white-soft);
-  border: 0.3em solid var(--blue-mid);
+  width: 100%;
+  border: 0.3em solid var(--white-soft); /* outer border */
   border-top: none;
   border-radius: 0 0 1em 1em;
+  background: var(--yellow-main);
+  /* border: 0.3em solid var(--blue-mid); */
+  border-radius: 0 0 1em 1em;
   box-shadow: -0.35em 0.35em 0 var(--blue-dark);
+}
+
+.search-input.dropdown-open {
+  border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .autocomplete-dropdown ul {

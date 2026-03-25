@@ -64,6 +64,33 @@
       ],
       "status": "solid",
       "level": "intermediate"
+    },
+    {
+      "id": "JS-001",
+      "topic": "Array fallback pattern for missing data",
+      "date": "2026-03-16",
+      "files": [
+        {
+          "path": "js/render.js",
+          "functions": ["arrayFallback"]
+        }
+      ],
+      "problem": "How to handle cases where pokemon data might be missing or incomplete without breaking the rendering logic.",
+      "pattern": "function arrayFallback(arr, fallback) { return arr && arr.length > 0 ? arr : [fallback]; }",
+      "example": "const types = arrayFallback(pokemon.types, { type: { name: 'unknown' } });",
+      "notes": [
+        "This pattern provides a simple way to ensure that the rendering logic always has an array to work with, even if the original data is missing or empty.",
+        "It prevents errors that would occur if the code tried to iterate over undefined or null values.",
+        "The fallback value can be customized based on the expected data structure, allowing for graceful degradation of the UI.",
+        "In this project, it was used to ensure that every pokemon card could display at least one type, even if the API response was incomplete."
+      ],
+      "related": [
+        "nullish coalescing operator (??)",
+        "default parameters in functions",
+        "data validation and sanitization"
+      ],
+      "status": "solid",
+      "level": "beginner"
     }
   ]
 }

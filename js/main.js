@@ -8,7 +8,7 @@ let next; //  document.getElementById("next-btn")
 let last; // document.getElementById("last-btn")
 let start; // document.getElementById("poke-btn") all done in bindUI()
 let searchInput;
-let autocompleteDropdown = document.querySelector(".autocomplete-dropdown");
+let autocompleteDropdown;
 
 const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
@@ -32,6 +32,7 @@ async function init() {
 }
 
 function bindUI() {
+  autocompleteDropdown = document.querySelector(".autocomplete-dropdown");
   next = document.getElementById("next-btn");
   last = document.getElementById("last-btn");
   start = document.getElementById("poke-btn");
@@ -255,7 +256,7 @@ function handleSearchInput() {
   const query = searchInput.value.trim().toLowerCase(); // easier to compare
   const dropdown = autocompleteDropdown;
 
-  if (!dropdown) return;
+  if (!dropdown || !searchInput) return;
   dropdown.innerHTML = "";
 
   if (query.length >= 3) {
@@ -264,21 +265,26 @@ function handleSearchInput() {
       .slice(0, 10);
 
     if (suggestions.length > 0) {
+      searchInput.classList.add("drowpdown-open"); // border-bottom none + radius
+          // -> only if suggestions, otherwise looks weird with empty dropdown
+              
       const ul = document.createElement("ul");
+
       suggestions.forEach((name) => {
         const li = document.createElement("li");
         li.textContent = capitalize(name);
         li.addEventListener("click", () => selectSuggestion(name));
         ul.appendChild(li); // add click listener to each suggestion
       });
+
       dropdown.appendChild(ul); // add suggestions to dropdown
       dropdown.style.display = "block";
-    } else {
-      dropdown.style.display = "none"; // hide if no suggestions
+      return; // exit early if suggestions found
     }
-  } else {
-    dropdown.style.display = "none"; // same same but different: if too short
   }
+
+    dropdown.style.display = "none"; // hide dropdown if no suggestions
+    searchInput.classList.remove("dropdown-open");
 }
 
 function selectSuggestion(name) {
@@ -287,7 +293,7 @@ function selectSuggestion(name) {
   performSearch(name); // trigger search action
 }
 
-function handleSearchKeydown (event) {
+function handleSearchKeydown(event) {
   if (event.key === "Enter") {
     const query = searchInput.value.trim();
     autocompleteDropdown.style.display = "none"; // hide dropdown on enter
@@ -298,13 +304,18 @@ function handleSearchKeydown (event) {
 }
 
 function handleOutsideClick(event) {
-  if (!searchInput.contains(event.target) && !autocompleteDropdown.contains(event.target)) {
+  if (
+    !searchInput.contains(event.target) &&
+    !autocompleteDropdown.contains(event.target)
+  ) {
     autocompleteDropdown.style.display = "none"; // hide dropdown if click outside
   }
 }
 
 function performSearch(query) {
-  const pokemon = baseNames.find(name => name.toLowerCase() === query.toLowerCase());
+  const pokemon = baseNames.find(
+    (name) => name.toLowerCase() === query.toLowerCase(),
+  );
 
   if (pokemon) {
     openDialog(pokemon);
