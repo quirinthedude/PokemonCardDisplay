@@ -265,7 +265,7 @@ function handleSearchInput() {
       .slice(0, 10);
 
     if (suggestions.length > 0) {
-      searchInput.classList.add("drowpdown-open"); // border-bottom none + radius
+      searchInput.classList.add("dropdown-open"); // border-bottom none + radius
           // -> only if suggestions, otherwise looks weird with empty dropdown
               
       const ul = document.createElement("ul");

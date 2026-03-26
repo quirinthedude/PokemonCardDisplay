@@ -92,6 +92,7 @@ header {
   max-width: 420px;
   min-width: 240px;
   margin: 2% auto;
+  z-index: 10
 }
 
 .search-input {
@@ -140,6 +141,7 @@ header {
   /* border: 0.3em solid var(--blue-mid); */
   border-radius: 0 0 1em 1em;
   box-shadow: -0.35em 0.35em 0 var(--blue-dark);
+  z-index: 100;
 }
 
 .search-input.dropdown-open {
