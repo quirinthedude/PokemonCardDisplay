@@ -13,6 +13,27 @@
   --blue-dark: #0b5ed7;
   --blue-mid: #1e88e5;
   --white-soft: #f7fbff;
+/* Pokémon Type Gradients */
+
+  --type-normal: linear-gradient(135deg, #a8a878, #c8c8a8);
+  --type-fire: linear-gradient(135deg, #f08030, #f8a060);
+  --type-water: linear-gradient(135deg, #6890f0, #98b8ff);
+  --type-electric: linear-gradient(135deg, #f8d030, #fff080);
+  --type-grass: linear-gradient(135deg, #78c850, #a8e080);
+  --type-ice: linear-gradient(135deg, #98d8d8, #c8f0f0);
+  --type-fighting: linear-gradient(135deg, #c03028, #e06050);
+  --type-poison: linear-gradient(135deg, #a040a0, #d080d0);
+  --type-ground: linear-gradient(135deg, #e0c068, #f0d890);
+  --type-flying: linear-gradient(135deg, #a890f0, #c8b8ff);
+  --type-psychic: linear-gradient(135deg, #f85888, #ff90b0);
+  --type-bug: linear-gradient(135deg, #a8b820, #c8d840);
+  --type-rock: linear-gradient(135deg, #b8a038, #d8c060);
+  --type-ghost: linear-gradient(135deg, #705898, #a088c0);
+  --type-dragon: linear-gradient(135deg, #7038f8, #a070ff);
+  --type-dark: linear-gradient(135deg, #705848, #a08870);
+  --type-steel: linear-gradient(135deg, #b8b8d0, #d8d8f0);
+  --type-fairy: linear-gradient(135deg, #ee99ac, #f7c0cf);
+
 }
 
 /* =========================
@@ -194,6 +215,7 @@ header {
   padding: 12px;
 
   display: grid;
+  grid-template-rows: auto 1fr auto;
   gap: 10px;
   align-content: start;
 
@@ -209,7 +231,7 @@ header {
 
 .poke-img-wrap {
   border-radius: 12px;
-  background: linear-gradient(180deg, var(--yellow-light), var(--yellow-main));
+  /* background: linear-gradient(180deg, var(--yellow-light), var(--yellow-main)); */
   padding: 10px;
 
   display: grid;
@@ -238,13 +260,98 @@ header {
   opacity: 0.95;
   display: flex;
   gap: 6px;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 4px;
+  min-height: 32px;
+}
+
+.poke-types span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.poke-types img {
+  width: 20px;
+  height: 20px;
 }
 
 .type-icon {
   width: 24px;
   height: 24px;
+}
+
+/* type-specific background colors for cards */
+.pokemon-card[data-type="normal"] .poke-img-wrap {
+  background: var(--type-normal);
+}
+
+.pokemon-card[data-type="fire"] .poke-img-wrap {
+  background: var(--type-fire);
+}
+
+.pokemon-card[data-type="water"] .poke-img-wrap {
+  background: var(--type-water);
+}
+
+.pokemon-card[data-type="electric"] .poke-img-wrap {
+  background: var(--type-electric);
+}
+
+.pokemon-card[data-type="grass"] .poke-img-wrap {
+  background: var(--type-grass);
+}
+
+.pokemon-card[data-type="ice"] .poke-img-wrap {
+  background: var(--type-ice);
+}
+
+.pokemon-card[data-type="fighting"] .poke-img-wrap {
+  background: var(--type-fighting);
+}
+
+.pokemon-card[data-type="poison"] .poke-img-wrap {
+  background: var(--type-poison);
+}
+
+.pokemon-card[data-type="ground"] .poke-img-wrap {
+  background: var(--type-ground);
+}
+
+.pokemon-card[data-type="flying"] .poke-img-wrap {
+  background: var(--type-flying);
+}
+
+.pokemon-card[data-type="psychic"] .poke-img-wrap {
+  background: var(--type-psychic);
+}
+
+.pokemon-card[data-type="bug"] .poke-img-wrap {
+  background: var(--type-bug);
+}
+
+.pokemon-card[data-type="rock"] .poke-img-wrap {
+  background: var(--type-rock);
+}
+
+.pokemon-card[data-type="ghost"] .poke-img-wrap {
+  background: var(--type-ghost);
+}
+
+.pokemon-card[data-type="dragon"] .poke-img-wrap {
+  background: var(--type-dragon);
+}
+
+.pokemon-card[data-type="dark"] .poke-img-wrap {
+  background: var(--type-dark);
+}
+
+.pokemon-card[data-type="steel"] .poke-img-wrap {
+  background: var(--type-steel);
+}
+
+.pokemon-card[data-type="fairy"] .poke-img-wrap {
+  background: var(--type-fairy);
 }
 
 /* Empty / placeholder card */

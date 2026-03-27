@@ -1,5 +1,7 @@
 export function renderPokemons(pokeArray, pageSize) {
   const container = document.getElementById("pokemon-container");
+  
+  // fallback
   if (!container) return;
 
   // clear previous render
@@ -18,13 +20,16 @@ export function renderPokemons(pokeArray, pageSize) {
     }
 
     const { name, img } = pokemonImageDef(p);
+    const types = getTypeNames(p);
+    const mainType = types[0];
 
     // attach pokemon name as dataset attribute
-    // results in HTML: <div data-name="bulbasaur">
+    // and type for styling, eg: <div data-name="bulbasaur" data-type="grass">
     card.dataset.name = name;
+    card.dataset.type = mainType;
 
     // render inner structure (image + name)
-    renderImage(card, name, img);
+    renderImage(card, name, img, types);
 
     // appendChild inserts the node into the DOM tree,
     // making the card visible in the container
@@ -50,14 +55,25 @@ function pokemonImageDef(p) {
   return { name, img };
 }
 
-function renderImage(card, name, img) {
+function renderImage(card, name, img, types) {
   card.innerHTML = `
-    <div class="poke-img-wrap">
-    ${img ? `<img src="${img}" alt="${name}">` : `<div class="img-placeholder"></div>`}
+    <div class="poke-types">
+    ${types
+      .map(
+        (t) => 
+          `<span><img src="./assets/types/${t}.png" alt="${t}" title="${t}">${capitalize(t)}</span>`
+      )
+      .join("")}
     </div>
-    <div class="poke-name">${name}</div>
 
+    <div class="poke-img-wrap">
+    ${
+      img 
+      ? `<img src="${img}" alt="${name}">` 
+      : `<div class="img-placeholder"></div>`
+    }
     </div>
+    <div class="poke-name">${capitalize(name)}</div>
     `;
 }
 

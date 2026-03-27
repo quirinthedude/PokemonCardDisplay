@@ -91,6 +91,41 @@
       ],
       "status": "solid",
       "level": "beginner"
+    },
+    {
+      "id": "CSS-002",
+      "topic": "Grid rows for stable card layout",
+      "date": "2026-03-27",
+      "files": [
+        {
+          "path": "css/styles.css",
+          "functions": []
+        },
+        {
+          "path": "js/render.js",
+          "functions": ["renderImage"]
+        }
+      ],
+      "problem": "How to place pokemon types, image, and name in a clear vertical card structure without the layout feeling jumpy when content varies.",
+      "pattern": "parent grid defines vertical zones -> top row for types -> middle row for image -> bottom row for name",
+      "example": ".pokemon-card { display: grid; grid-template-rows: auto 1fr auto; }",
+      "notes": [
+        "Grid is useful when the card should be split into clear vertical sections.",
+        "The top row can hold the type icons, the middle row the image, and the bottom row the pokemon name.",
+        "Flex inside .poke-types still handles the horizontal arrangement of the icons.",
+        "Grid and Flex are not opposites: Grid organizes the large page or card structure, Flex often organizes small groups inside one area.",
+        "min-height on .poke-types does not control the icon direction. It only reserves a minimum vertical space for that row.",
+        "This helps cards feel calmer when one pokemon has one type and another has two types.",
+        "A useful mental model is: Grid defines the shelves, Flex arranges the objects on one shelf."
+      ],
+      "related": [
+        "grid-template-rows",
+        "flexbox inside grid items",
+        "min-height",
+        "stable UI layout"
+      ],
+      "status": "solid",
+      "level": "beginner-intermediate"
     }
   ]
 }
