@@ -269,6 +269,17 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  opacity: 0.85;
+}
+
+.poke-types span span {
+  display: none;
+}
+
+.pokemon-card:hover .poke-types span span {
+  display: inline;
 }
 
 .poke-types img {

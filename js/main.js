@@ -146,6 +146,24 @@ async function enrichEvolutionEntries(entries) {
   return result;
 }
 
+async function fetchPokemonData(name) {
+     
+    // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
+    try {
+      const response = await fetch(BASE_URL + name);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
+      }
+      const p = await response.json();
+    } catch (err) {
+      console.warn(`Skipped: ${name} - `, err);
+      return; // Don't show dialog if fetch fails
+    }
+    return p;
+  }
+
+    
+
 // actions
 async function nextPokemons() {
   if (pokeCount + PAGE_SIZE >= maxPokemons) return;
@@ -197,24 +215,11 @@ async function openDialog(name) {
     title.textContent = capitalize(name);
   }
 
-  let p = pokeArray.find(function (pokemon) {
+  let p = pokeArray.find(function (pokemon) { 
     return pokemon?.name === name; // handshake pokemon.name
   });
 
-  if (!p) {
-    // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
-    try {
-      const response = await fetch(BASE_URL + name);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
-      }
-      p = await response.json();
-    } catch (err) {
-      console.warn(`Skipped: ${name} - `, err);
-      return; // Don't show dialog if fetch fails
-    }
-  }
-
+  if (!p) p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
   if (p) {
     renderDialog(p);
 
