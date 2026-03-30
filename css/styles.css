@@ -594,20 +594,6 @@ dialog[open] .dialog-img::after {
   font-family: monospace;
 }
 
-/*********************************/
-.test-dialog {
-  margin: 24px auto;
-  padding: 4px;
-  border: 3px solid var(--blue-dark);
-  border-radius: 16px;
-  background: var(--white-soft);
-  box-shadow: 0 0px 0 rgba(0, 0, 0, 0.12);
-  gap: 16px;
-  height: 80%;
-  width: 100%;
-}
-/****************************************************/
-
 .pokemon-box {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -621,7 +607,7 @@ dialog[open] .dialog-img::after {
   align-items: center;
   padding: 2%;
   width: 96%;
-  height: 100%;
+  height: auto;
   border: 0.2em solid var(--yellow-light);
   background: var(--yellow-main);
   gap: 2%;

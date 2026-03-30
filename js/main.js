@@ -147,22 +147,36 @@ async function enrichEvolutionEntries(entries) {
 }
 
 async function fetchPokemonData(name) {
-     
-    // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
-    try {
-      const response = await fetch(BASE_URL + name);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
-      }
-      const p = await response.json();
-    } catch (err) {
-      console.warn(`Skipped: ${name} - `, err);
-      return; // Don't show dialog if fetch fails
+  // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
+  try {
+    const response = await fetch(BASE_URL + name);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
     }
-    return p;
+    const p = await response.json();
+  } catch (err) {
+    console.warn(`Skipped: ${name} - `, err);
+    return; // Don't show dialog if fetch fails
   }
+  return p;
+}
 
-    
+async function getTypeAttribute(typeUrl) {
+  try {
+    const response = await fetch(typeUrl); // handshake typeUrl
+    const data = await response.json();
+    return {
+      strongAgainst: data.damage_relations.double_damage_to,
+      weakAgainst: data.damage_relations.double_damage_from,
+    };
+  } catch (error) {
+    console.warn(`Error fetching type attributes for ${typeUrl}:`, err);
+    return {
+      strongAgainst: [],
+      weakAgainst: [],
+    };
+  }
+}
 
 // actions
 async function nextPokemons() {
@@ -215,13 +229,15 @@ async function openDialog(name) {
     title.textContent = capitalize(name);
   }
 
-  let p = pokeArray.find(function (pokemon) { 
+  let p = pokeArray.find(function (pokemon) {
     return pokemon?.name === name; // handshake pokemon.name
   });
 
   if (!p) p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
   if (p) {
-    renderDialog(p);
+    const mainTypeUrl = p.types?.[0]?.type?.url;
+    const typeAttributes = await getTypeAttribute(mainTypeUrl);
+    renderDialog(p, typeAttributes);
 
     const evoEntries = await loadEvolutionChain(p);
     const evoDisplayData = await enrichEvolutionEntries(evoEntries);
@@ -271,8 +287,8 @@ function handleSearchInput() {
 
     if (suggestions.length > 0) {
       searchInput.classList.add("dropdown-open"); // border-bottom none + radius
-          // -> only if suggestions, otherwise looks weird with empty dropdown
-              
+      // -> only if suggestions, otherwise looks weird with empty dropdown
+
       const ul = document.createElement("ul");
 
       suggestions.forEach((name) => {
@@ -288,8 +304,8 @@ function handleSearchInput() {
     }
   }
 
-    dropdown.style.display = "none"; // hide dropdown if no suggestions
-    searchInput.classList.remove("dropdown-open");
+  dropdown.style.display = "none"; // hide dropdown if no suggestions
+  searchInput.classList.remove("dropdown-open");
 }
 
 function selectSuggestion(name) {

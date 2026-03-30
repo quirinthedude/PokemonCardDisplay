@@ -89,15 +89,18 @@ function getTypeNames(pokemon) {
   return types;
 }
 
-export function renderDialog(p) {
+export function renderDialog(p, typeAttributes) {
   const typesPanel = document.querySelector("#dialog-body .tab-types");
   const statsPanel = document.querySelector("#dialog-body .tab-stats");
   const evoPanel = document.querySelector("#dialog-body .tab-evo");
   if (!typesPanel || !statsPanel || !evoPanel) return;
 
   const types = getTypeNames(p);
+  const mainType = types[0];
+  const strongAgainst = typeAttributes.strongAgainst;;
+  const weakAgainst = typeAttributes.weakAgainst;
 
-  // Types Panel (dein Mock: Liste mit Icons)
+  // about Panel (dein Mock: Liste mit Icons)
   typesPanel.innerHTML = `
     <div class="pokemon-box">
       <div class="dialog-img">
@@ -105,9 +108,42 @@ export function renderDialog(p) {
       </div>
 
       <div class="poke-info">
-        <h2>Attack/Defense-Types:</h2>
+        <h2>Main-Type:</h2>
         <ul>
-          ${types.map((t) => `<li><img src="./assets/types/${t}.png" alt="${t}"> ${t}</li>`).join("")}
+          <li>
+            <img src="./assets/types/${mainType}.png" alt="${mainType}" title="${mainType}">
+            <strong>${capitalize(mainType)}</strong>
+          </li>
+        </ul>
+
+        <h3>Strong Against:</h3>
+        <ul>
+          ${strongAgainst.
+            map(
+              (t) => `
+            <li>
+              <img src="./assets/types/${t.name}.png" alt="${t.name}" title="${t.name}">
+              <strong>${capitalize(t.name)}</strong>
+            </li>
+          `,
+            )
+            .join("")}
+        </ul>
+        
+        <h3>Weak Against:</h3>
+        <ul>
+          ${weakAgainst.
+            map(
+              (t) => `
+            <li>
+              <img src="./assets/types/${t.name}.png" alt="${t.name}" title="${t.name}">
+              <strong>${capitalize(t.name)}</strong>
+             </li>
+          `,
+            )
+            .join("") 
+          }
+          </li>
         </ul>
       </div>
     </div>
