@@ -13,6 +13,13 @@ let autocompleteDropdown;
 const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+// cachemaps:
+const pokemonCache = new Map();
+const typeCache = new Map();
+const evolutionCache = new Map();
+// The Map object holds key-value pairs and remembers the original insertion order of the keys.
+// Any value (both objects and primitive values) may be used as either a key or a value.
+
 // imports
 import { renderPokemons, renderDialog, renderEvolution } from "./render.js";
 
@@ -23,12 +30,14 @@ window.addEventListener("DOMContentLoaded", init);
 // functions
 
 async function init() {
+  showLoading();
   bindUI();
   initDialogTabs();
   await loadBaseNames();
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
+  hideLoading();
 }
 
 function bindUI() {
@@ -76,8 +85,6 @@ async function loadBaseNames() {
 }
 
 async function loadPokemonBatch({ startIndex, targetCount }) {
-  // option object, a starting point for maybe more parameters
-  // -> nice candidate for a representing project
   const results = [];
   // array for pokemon data
   let i = startIndex;
@@ -92,6 +99,7 @@ async function loadPokemonBatch({ startIndex, targetCount }) {
       }
 
       const data = await response.json();
+      pokemonCache.set(name.toLowerCase(), data); // store in cache
       results.push(data);
     } catch (err) {
       console.warn(`Skipped: ${name} - `, err);
@@ -147,61 +155,97 @@ async function enrichEvolutionEntries(entries) {
 }
 
 async function fetchPokemonData(name) {
+  const cacheKey = name.toLowerCase();
+  console.log("POKECACHE HIT: ", cacheKey);
+  if (pokemonCache.has(cacheKey)) {
+    // check cache first
+    return pokemonCache.get(cacheKey); // return cached data if found
+  }
   // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
   try {
     const response = await fetch(BASE_URL + name);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
     }
-    const p = await response.json();
+
+    const pokemonData = await response.json();
+    pokemonCache.set(cacheKey, pokemonData); // store in cache
+    return pokemonData;
   } catch (err) {
     console.warn(`Skipped: ${name} - `, err);
-    return; // Don't show dialog if fetch fails
+    return null; // Don't show dialog if fetch fails
   }
-  return p;
 }
 
 async function getTypeAttribute(typeUrl) {
+  const cached = checkTypeCache(typeUrl); // check cache before fetching
+  if (cached) return cached;
+
   try {
-    const response = await fetch(typeUrl); // handshake typeUrl
+    const response = await fetch(typeUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} for ${typeUrl}`);
+    }
     const data = await response.json();
-    return {
+
+    const typeData = {
       strongAgainst: data.damage_relations.double_damage_to,
       weakAgainst: data.damage_relations.double_damage_from,
     };
-  } catch (error) {
-    console.warn(`Error fetching type attributes for ${typeUrl}:`, err);
+
+    typeCache.set(typeUrl, typeData); // store in cache
+    return typeData;
+  } catch (err) {
+    console.warn(`Failed to fetch type data from ${typeUrl} - `, err);
     return {
       strongAgainst: [],
       weakAgainst: [],
-    };
+    }; // fallback to empty arrays
   }
 }
 
+async function getEvolutiondata(p) {
+  const cacheKey = p.name.toLowerCase();
+  if (evolutionCache.has(cacheKey)) {
+    return evolutionCache.get(cacheKey);
+  }
+
+  const evoEntries = await loadEvolutionChain(p);
+  const enrichedEvoData = await enrichEvolutionEntries(evoEntries);
+
+  evolutionCache.set(cacheKey, enrichedEvoData);
+  return enrichedEvoData;
+}
 // actions
 async function nextPokemons() {
+  showLoading();
   if (pokeCount + PAGE_SIZE >= maxPokemons) return;
 
   pokeCount += PAGE_SIZE;
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
+  hideLoading();
 }
 
 async function lastPokemons() {
+  showLoading();
   if (pokeCount === 0) return;
 
   pokeCount -= PAGE_SIZE;
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
+  hideLoading();
 }
 
 async function initPokemons() {
+  showLoading();
   pokeCount = 0;
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
   updateNavUI();
+  hideLoading();
 }
 
 function bindCardClicks() {
@@ -220,6 +264,7 @@ function bindCardClicks() {
 }
 
 async function openDialog(name) {
+  showLoading();
   const dialog = document.getElementById("lightbox");
   const title = document.getElementById("dialog-title");
 
@@ -233,17 +278,20 @@ async function openDialog(name) {
     return pokemon?.name === name; // handshake pokemon.name
   });
 
-  if (!p) p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
+  if (!p) {
+    p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
+  }
   if (p) {
+    console.log("POKECACHE HIT: ", name);
     const mainTypeUrl = p.types?.[0]?.type?.url;
     const typeAttributes = await getTypeAttribute(mainTypeUrl);
     renderDialog(p, typeAttributes);
 
-    const evoEntries = await loadEvolutionChain(p);
-    const evoDisplayData = await enrichEvolutionEntries(evoEntries);
+    const evoDisplayData = await getEvolutiondata(p);
     renderEvolution(evoDisplayData);
   }
 
+  hideLoading();
   dialog.showModal();
 }
 
@@ -363,4 +411,26 @@ function extractEvolutionEntries(chain) {
   }
 
   return names;
+}
+
+function checkTypeCache(typeUrl) {
+  if (!typeUrl) {
+    return {
+      strongAgainst: [],
+      weakAgainst: [],
+    };
+  }
+  if (typeCache.has(typeUrl)) {
+    return typeCache.get(typeUrl);
+  }
+
+  return null; // not found in cache
+}
+
+function showLoading() {
+  document.getElementById("loading-overlay").classList.add("active");
+}
+
+function hideLoading() {
+  document.getElementById("loading-overlay").classList.remove("active");
 }
