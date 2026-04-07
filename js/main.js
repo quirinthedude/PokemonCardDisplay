@@ -37,6 +37,8 @@ async function init() {
   await loadBaseNames();
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
+  initDialogClose();
+  initDialogKeyboard();
   updateNavUI();
   hideLoading();
 }
@@ -273,7 +275,10 @@ async function openDialog(name) {
   try {
     await updateDialogContent(name);
     if (!dialog.open) {
-      dialog.showModal(); 
+      dialog.showModal();
+      dialog.focus(); // ensure dialog itself gets focus for keyboard navigation  
+      const closeBtn = document.getElementById("dialog-close");
+      if (closeBtn) closeBtn.focus();
     }
   } finally {
     hideLoading();
@@ -309,7 +314,7 @@ function initDialogTabs() {
 function initDialogNavigation() {
   const prevBtn = document.getElementById("dialog-prev");
   const nextBtn = document.getElementById("dialog-next");
-  
+
   if (!prevBtn || !nextBtn) return;
 
   prevBtn.addEventListener("click", () => navigateDialog(-1));
@@ -321,17 +326,17 @@ async function navigateDialog(direction) {
   if (!title) return;
 
   const currentName = title.textContent.toLowerCase();
-  const index = pokeArray.findIndex(p => p.name === currentName);
+  const index = pokeArray.findIndex((p) => p.name === currentName);
   if (index === -1) return;
 
   const newIndex = index + direction;
   if (newIndex < 0 || newIndex >= pokeArray.length) return;
 
   const newPokemon = pokeArray[newIndex];
-  if (!newPokemon) return
+  if (!newPokemon) return;
 
   showLoading();
-  
+
   try {
     await updateDialogContent(newPokemon.name);
   } finally {
@@ -342,22 +347,25 @@ async function navigateDialog(direction) {
 function updateDialogNav(currentName) {
   const prevBtn = document.getElementById("dialog-prev");
   const nextBtn = document.getElementById("dialog-next");
-  
+
   if (!prevBtn || !nextBtn) return;
 
-  const index = pokeArray.findIndex(p => p.name === currentName.toLowerCase());
+  const index = pokeArray.findIndex(
+    (p) => p.name === currentName.toLowerCase(),
+  );
 
-  prevBtn.classList.toggle("disabled", index <= 0);// disable if first
+  prevBtn.classList.toggle("disabled", index <= 0); // disable if first
   nextBtn.classList.toggle("disabled", index >= pokeArray.length - 1); // disable if last
 }
 
 async function updateDialogContent(name) {
-  const title = document.getElementById("dialog-title");// pokemon name in dialog
+  const title = document.getElementById("dialog-title"); // pokemon name in dialog
   if (title) {
     title.textContent = capitalize(name);
   }
-  
-  let p = pokeArray.find(function (pokemon) { // find pokemon in pokeArray
+
+  let p = pokeArray.find(function (pokemon) {
+    // find pokemon in pokeArray
     return pokemon?.name === name; // handshake pokemon.name
   });
 
@@ -366,15 +374,56 @@ async function updateDialogContent(name) {
   }
   if (!p) return; // if still not found, exit
 
-    console.log("POKECACHE HIT: ", name);
-    const mainTypeUrl = p.types?.[0]?.type?.url; // handshake p.types[0].type.url
-    const typeAttributes = await getTypeAttribute(mainTypeUrl); // get type attributes (strong/weak) for main type
-    renderDialog(p, typeAttributes);
+  console.log("POKECACHE HIT: ", name);
+  const mainTypeUrl = p.types?.[0]?.type?.url; // handshake p.types[0].type.url
+  const typeAttributes = await getTypeAttribute(mainTypeUrl); // get type attributes (strong/weak) for main type
+  renderDialog(p, typeAttributes);
 
-    const evoDisplayData = await getEvolutiondata(p); // get evolution data for pokemon
-    renderEvolution(evoDisplayData);
+  const evoDisplayData = await getEvolutiondata(p); // get evolution data for pokemon
+  renderEvolution(evoDisplayData);
 
-    updateDialogNav(name); // update dialog navigation buttons based on current pokemon index
+  updateDialogNav(name); // update dialog navigation buttons based on current pokemon index
+}
+
+function initDialogClose() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("click", handleDialogOutsideClick);
+}
+
+function initDialogKeyboard() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault(); // prevent default scrolling behavior 
+      navigateDialog(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      navigateDialog(1);
+    }
+  });
+}
+
+function handleDialogOutsideClick(event) {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("click", function (event) {
+    const rect = dialog.getBoundingClientRect(); // get dialog position and size
+
+    const clickedInside =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+
+    if (!clickedInside) {
+      dialog.close(); // close dialog if click was outside
+    }
+  });
 }
 
 function handleSearchInput() {
@@ -412,6 +461,17 @@ function handleSearchInput() {
   searchInput.classList.remove("dropdown-open");
 }
 
+function performSearch(query) {
+  const pokemon = baseNames.find(function (name) {
+    return name.toLowerCase() === query.toLowerCase();
+  });
+  if (pokemon) {
+    openDialog(pokemon);
+  } else {
+    alert("No Pokémon found with that name.");
+  } 
+}
+
 function selectSuggestion(name) {
   searchInput.value = name; // set input to selected name
   autocompleteDropdown.style.display = "none"; // hide dropdown
@@ -434,16 +494,6 @@ function handleOutsideClick(event) {
     !autocompleteDropdown.contains(event.target)
   ) {
     autocompleteDropdown.style.display = "none"; // hide dropdown if click outside
-  }
-}
-
-function performSearch(query) {
-  const pokemon = baseNames.find(
-    (name) => name.toLowerCase() === query.toLowerCase(),
-  );
-
-  if (pokemon) {
-    openDialog(pokemon);
   }
 }
 
