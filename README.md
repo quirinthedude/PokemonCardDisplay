@@ -1,4 +1,4 @@
-# Pokémon Card Display
+# Pokémon Card Display – API-driven Frontend Application
 
 A JavaScript web application that displays Pokémon cards using the public PokéAPI.
 
@@ -6,9 +6,15 @@ The project focuses on building a clean frontend architecture with clear separat
 
 ---
 
+## Live Demo
+
+👉 https://pokemon.quirinpflaum.ch/
+
+---
+
 ## Screenshot
 
-![Pokemon Card Display](assets/pokemon.png)
+[![Pokemon Card Display](assets/pokemon.png)](https://pokemon.quirinpflaum.ch/)
 
 ---
 
@@ -22,6 +28,8 @@ The project focuses on building a clean frontend architecture with clear separat
 * clean card design with type-based styling
 * stable pagination based on a local index file
 
+---
+
 ### Dialog System
 
 * interactive detail dialog for each Pokémon
@@ -30,6 +38,17 @@ The project focuses on building a clean frontend architecture with clear separat
   * **Types**
   * **Stats**
   * **Evolution**
+
+---
+
+### UX & Interaction
+
+* dialog navigation via next / previous controls
+* loading overlay for async operations
+* autocomplete search with suggestions
+* keyboard-friendly interaction (tabs, dialog navigation)
+
+---
 
 ### Type System (API-based)
 
@@ -63,6 +82,16 @@ This project helped me practice:
 * implementing async data flows (`fetch`, `await`)
 * designing scalable UI systems
 * managing UI state in a predictable way
+* building UI systems that scale beyond simple DOM manipulation
+
+---
+
+## Architecture Highlights
+
+* strict separation of concerns (controller / renderer / styling)
+* render layer is fully decoupled from data fetching
+* UI driven by state, not direct DOM manipulation
+* reusable rendering functions
 
 ---
 
