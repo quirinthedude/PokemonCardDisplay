@@ -58,7 +58,10 @@ function bindUI() {
     if (last.classList.contains("disabled")) return;
     lastPokemons();
   });
-  start.addEventListener("click", initPokemons);
+  start.addEventListener("click", function () {
+    if (start.classList.contains("disabled")) return;
+    initPokemons();
+  });
 
   if (searchInput) {
     searchInput.addEventListener("input", handleSearchInput);
@@ -535,8 +538,16 @@ function checkTypeCache(typeUrl) {
 
 function showLoading() {
   document.getElementById("loading-overlay").classList.add("active");
+  setNavDisabled(true);
 }
 
 function hideLoading() {
   document.getElementById("loading-overlay").classList.remove("active");
+  setNavDisabled(false);
+}
+
+function setNavDisabled(state) {
+  if (next) next.classList.toggle("disabled", state);
+  if (last) last.classList.toggle("disabled", state);
+  if (start) start.classList.toggle("disabled", state);
 }
