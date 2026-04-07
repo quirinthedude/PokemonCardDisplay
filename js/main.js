@@ -265,36 +265,19 @@ function bindCardClicks() {
 }
 
 async function openDialog(name) {
-  showLoading();
   const dialog = document.getElementById("lightbox");
-  const title = document.getElementById("dialog-title");
-
   if (!dialog) return;
 
-  if (title) {
-    title.textContent = capitalize(name);
+  showLoading();
+
+  try {
+    await updateDialogContent(name);
+    if (!dialog.open) {
+      dialog.showModal(); 
+    }
+  } finally {
+    hideLoading();
   }
-
-  let p = pokeArray.find(function (pokemon) {
-    return pokemon?.name === name; // handshake pokemon.name
-  });
-
-  if (!p) {
-    p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
-  }
-  if (p) {
-    console.log("POKECACHE HIT: ", name);
-    const mainTypeUrl = p.types?.[0]?.type?.url;
-    const typeAttributes = await getTypeAttribute(mainTypeUrl);
-    renderDialog(p, typeAttributes);
-
-    const evoDisplayData = await getEvolutiondata(p);
-    renderEvolution(evoDisplayData);
-  }
-
-  updateDialogNav(name);
-  hideLoading();
-  dialog.showModal();
 }
 
 function initDialogTabs() {
@@ -345,9 +328,15 @@ async function navigateDialog(direction) {
   if (newIndex < 0 || newIndex >= pokeArray.length) return;
 
   const newPokemon = pokeArray[newIndex];
-  if (newPokemon) {
-    await openDialog(newPokemon.name);
-  }
+  if (!newPokemon) return
+
+  showLoading();
+  
+  try {
+    await updateDialogContent(newPokemon.name);
+  } finally {
+    hideLoading();
+  } // ensures loading state is cleared even if updateDialogContent fails
 }
 
 function updateDialogNav(currentName) {
@@ -362,6 +351,31 @@ function updateDialogNav(currentName) {
   nextBtn.classList.toggle("disabled", index >= pokeArray.length - 1); // disable if last
 }
 
+async function updateDialogContent(name) {
+  const title = document.getElementById("dialog-title");// pokemon name in dialog
+  if (title) {
+    title.textContent = capitalize(name);
+  }
+  
+  let p = pokeArray.find(function (pokemon) { // find pokemon in pokeArray
+    return pokemon?.name === name; // handshake pokemon.name
+  });
+
+  if (!p) {
+    p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
+  }
+  if (!p) return; // if still not found, exit
+
+    console.log("POKECACHE HIT: ", name);
+    const mainTypeUrl = p.types?.[0]?.type?.url; // handshake p.types[0].type.url
+    const typeAttributes = await getTypeAttribute(mainTypeUrl); // get type attributes (strong/weak) for main type
+    renderDialog(p, typeAttributes);
+
+    const evoDisplayData = await getEvolutiondata(p); // get evolution data for pokemon
+    renderEvolution(evoDisplayData);
+
+    updateDialogNav(name); // update dialog navigation buttons based on current pokemon index
+}
 
 function handleSearchInput() {
   const query = searchInput.value.trim().toLowerCase(); // easier to compare
