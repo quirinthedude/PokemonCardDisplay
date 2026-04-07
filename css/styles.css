@@ -482,6 +482,23 @@ dialog#lightbox[open] {
   line-height: 1.1;
 }
 
+.dialog-nav {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.dialog-nav:hover {
+  animation: tab-wobble 220ms ease-out;
+  opacity: 1;
+}
+
+.dialog-nav.disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 dialog[open] .dialog-img::after {
   animation: scanner-ring 600ms ease-out;
 }

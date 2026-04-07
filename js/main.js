@@ -33,6 +33,7 @@ async function init() {
   showLoading();
   bindUI();
   initDialogTabs();
+  initDialogNavigation();
   await loadBaseNames();
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
@@ -291,6 +292,7 @@ async function openDialog(name) {
     renderEvolution(evoDisplayData);
   }
 
+  updateDialogNav(name);
   hideLoading();
   dialog.showModal();
 }
@@ -320,6 +322,46 @@ function initDialogTabs() {
     });
   });
 }
+
+function initDialogNavigation() {
+  const prevBtn = document.getElementById("dialog-prev");
+  const nextBtn = document.getElementById("dialog-next");
+  
+  if (!prevBtn || !nextBtn) return;
+
+  prevBtn.addEventListener("click", () => navigateDialog(-1));
+  nextBtn.addEventListener("click", () => navigateDialog(1));
+}
+
+async function navigateDialog(direction) {
+  const title = document.getElementById("dialog-title");
+  if (!title) return;
+
+  const currentName = title.textContent.toLowerCase();
+  const index = pokeArray.findIndex(p => p.name === currentName);
+  if (index === -1) return;
+
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= pokeArray.length) return;
+
+  const newPokemon = pokeArray[newIndex];
+  if (newPokemon) {
+    await openDialog(newPokemon.name);
+  }
+}
+
+function updateDialogNav(currentName) {
+  const prevBtn = document.getElementById("dialog-prev");
+  const nextBtn = document.getElementById("dialog-next");
+  
+  if (!prevBtn || !nextBtn) return;
+
+  const index = pokeArray.findIndex(p => p.name === currentName.toLowerCase());
+
+  prevBtn.classList.toggle("disabled", index <= 0);// disable if first
+  nextBtn.classList.toggle("disabled", index >= pokeArray.length - 1); // disable if last
+}
+
 
 function handleSearchInput() {
   const query = searchInput.value.trim().toLowerCase(); // easier to compare
