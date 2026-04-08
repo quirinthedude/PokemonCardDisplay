@@ -126,6 +126,44 @@
       ],
       "status": "solid",
       "level": "beginner-intermediate"
+    },
+    {
+      "id": "JS-002",
+      "topic": "Loading state, early return and pragmatic UI safety",
+      "date": "2026-04-08",
+      "files": [
+        {
+          "path": "js/main.js",
+          "functions": [
+            "nextPokemons",
+            "lastPokemons",
+            "showLoading",
+            "hideLoading"
+          ]
+        }
+      ],
+      "problem": "A loading overlay can remain active when showLoading() is called before a guard clause that returns early.",
+      "pattern": "check guard conditions first -> only then activate loading state",
+      "example": "if (pokeCount + PAGE_SIZE >= maxPokemons) return; showLoading();",
+      "notes": [
+        "This bug may stay invisible for a long time because it only appears on edge-case paths, such as clicking next on the last page or previous on the first page.",
+        "The practical fix for this project was not a full architectural rewrite, but simply moving showLoading() behind the early-return condition.",
+        "This is a good example of pragmatic debugging: solve the concrete user-facing problem first, without overengineering the project.",
+        "A deeper long-term lesson still exists in the background: UI state should ideally be reset on every execution path, including errors and interrupted flows.",
+        "That broader idea can later be implemented with try/catch/finally or Promise.finally(), but for this DA stage it was intentionally documented rather than fully enforced.",
+        "The difference between project-ready and career-ready code became visible here: one fix solves the assignment issue, while the deeper pattern prepares for older APIs, messy codebases, and human error in real jobs."
+      ],
+      "related": [
+        "guard clauses",
+        "early return",
+        "UI state management",
+        "loading overlays",
+        "try/catch/finally",
+        "Promise.finally",
+        "debugging edge cases"
+      ],
+      "status": "documented",
+      "level": "intermediate"
     }
   ]
 }

@@ -224,9 +224,9 @@ async function getEvolutiondata(p) {
 }
 // actions
 async function nextPokemons() {
-  showLoading();
   if (pokeCount + PAGE_SIZE >= maxPokemons) return;
 
+  showLoading();
   pokeCount += PAGE_SIZE;
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
@@ -235,9 +235,9 @@ async function nextPokemons() {
 }
 
 async function lastPokemons() {
-  showLoading();
   if (pokeCount === 0) return;
 
+  showLoading();
   pokeCount -= PAGE_SIZE;
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
