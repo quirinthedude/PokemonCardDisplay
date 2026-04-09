@@ -279,7 +279,7 @@ async function openDialog(name) {
     await updateDialogContent(name);
     if (!dialog.open) {
       dialog.showModal();
-      dialog.focus(); // ensure dialog itself gets focus for keyboard navigation  
+      dialog.focus(); // ensure dialog itself gets focus for keyboard navigation
       const closeBtn = document.getElementById("dialog-close");
       if (closeBtn) closeBtn.focus();
     }
@@ -401,7 +401,7 @@ function initDialogKeyboard() {
 
   dialog.addEventListener("keydown", function (event) {
     if (event.key === "ArrowLeft") {
-      event.preventDefault(); // prevent default scrolling behavior 
+      event.preventDefault(); // prevent default scrolling behavior
       navigateDialog(-1);
     } else if (event.key === "ArrowRight") {
       event.preventDefault();
@@ -414,19 +414,9 @@ function handleDialogOutsideClick(event) {
   const dialog = document.getElementById("lightbox");
   if (!dialog) return;
 
-  dialog.addEventListener("click", function (event) {
-    const rect = dialog.getBoundingClientRect(); // get dialog position and size
-
-    const clickedInside =
-      event.clientX >= rect.left &&
-      event.clientX <= rect.right &&
-      event.clientY >= rect.top &&
-      event.clientY <= rect.bottom;
-
-    if (!clickedInside) {
-      dialog.close(); // close dialog if click was outside
-    }
-  });
+  if (event.target === dialog) {
+    dialog.close(); // close dialog if click was on backdrop (dialog itself)
+  }
 }
 
 function handleSearchInput() {
@@ -472,7 +462,7 @@ function performSearch(query) {
     openDialog(pokemon);
   } else {
     alert("No Pokémon found with that name.");
-  } 
+  }
 }
 
 function selectSuggestion(name) {
