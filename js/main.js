@@ -10,19 +10,17 @@ let start; // document.getElementById("poke-btn") all done in bindUI()
 let searchInput;
 let autocompleteDropdown;
 
-const MAX_POKEMONS = 341;
 const PAGE_SIZE = 20;
-const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
-// cachemaps:
-const pokemonCache = new Map();
-const typeCache = new Map();
-const evolutionCache = new Map();
-// The Map object holds key-value pairs and remembers the original insertion order of the keys.
-// Any value (both objects and primitive values) may be used as either a key or a value.
 
 // imports
 import { renderPokemons, renderDialog, renderEvolution } from "./render.js";
-
+import {
+  loadBaseNames,
+  loadPokemonBatch,
+  fetchPokemonData,
+  getTypeAttribute,
+  getEvolutionData,
+} from "./fetches.js";
 // eventlisteners
 
 window.addEventListener("DOMContentLoaded", init);
@@ -34,7 +32,11 @@ async function init() {
   bindUI();
   initDialogTabs();
   initDialogNavigation();
-  await loadBaseNames();
+
+  const baseData = await loadBaseNames();
+  baseNames = baseData.baseNames;
+  maxPokemons = baseData.maxPokemons;
+
   await loadPokemons();
   renderPokemons(pokeArray, PAGE_SIZE);
   initDialogClose();
@@ -82,146 +84,15 @@ function updateNavUI() {
   else next.classList.remove("disabled");
 }
 
-// fetches
-async function loadBaseNames() {
-  const nameJSON = await fetch("./json/base_names.json");
-  const data = await nameJSON.json();
-  baseNames = data.bases;
-  maxPokemons = baseNames.length > 0 ? baseNames.length : MAX_POKEMONS;
-}
-
-async function loadPokemonBatch({ startIndex, targetCount }) {
-  const results = [];
-  // array for pokemon data
-  let i = startIndex;
-
-  while (results.length < targetCount && i < maxPokemons) {
-    const name = baseNames[i];
-
-    try {
-      const response = await fetch(BASE_URL + name);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
-      }
-
-      const data = await response.json();
-      pokemonCache.set(name.toLowerCase(), data); // store in cache
-      results.push(data);
-    } catch (err) {
-      console.warn(`Skipped: ${name} - `, err);
-    }
-
-    i++;
-  }
-
-  return results;
-}
-
 async function loadPokemons() {
   pokeArray = await loadPokemonBatch({
     startIndex: pokeCount,
     targetCount: PAGE_SIZE,
+    baseNames,
+    maxPokemons,
   });
 }
 
-async function loadEvolutionChain(p) {
-  if (!p?.species?.url) return []; // handshake p.species.url
-  //                  otherwise return empty array
-
-  const speciesResponse = await fetch(p.species.url);
-  const speciesData = await speciesResponse.json();
-
-  const evoUrl = speciesData?.evolution_chain?.url;
-  if (!evoUrl) return []; // again handshake-fallback
-
-  const evoResponse = await fetch(evoUrl);
-  const evoData = await evoResponse.json();
-
-  return extractEvolutionEntries(evoData.chain);
-}
-
-async function enrichEvolutionEntries(entries) {
-  const result = [];
-
-  for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
-
-    const response = await fetch(BASE_URL + entry.name);
-    const data = await response.json();
-
-    result.push({
-      name: entry.name,
-      img:
-        data.sprites?.other?.["official-artwork"]?.front_default ??
-        data.sprites?.front_default ??
-        "",
-    });
-  }
-  return result;
-}
-
-async function fetchPokemonData(name) {
-  const cacheKey = name.toLowerCase();
-  console.log("POKECACHE HIT: ", cacheKey);
-  if (pokemonCache.has(cacheKey)) {
-    // check cache first
-    return pokemonCache.get(cacheKey); // return cached data if found
-  }
-  // Fetch the Pokemon if not in pokeArray (using similar logic to loadPokemonBatch)
-  try {
-    const response = await fetch(BASE_URL + name);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} for ${BASE_URL + name}`);
-    }
-
-    const pokemonData = await response.json();
-    pokemonCache.set(cacheKey, pokemonData); // store in cache
-    return pokemonData;
-  } catch (err) {
-    console.warn(`Skipped: ${name} - `, err);
-    return null; // Don't show dialog if fetch fails
-  }
-}
-
-async function getTypeAttribute(typeUrl) {
-  const cached = checkTypeCache(typeUrl); // check cache before fetching
-  if (cached) return cached;
-
-  try {
-    const response = await fetch(typeUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} for ${typeUrl}`);
-    }
-    const data = await response.json();
-
-    const typeData = {
-      strongAgainst: data.damage_relations.double_damage_to,
-      weakAgainst: data.damage_relations.double_damage_from,
-    };
-
-    typeCache.set(typeUrl, typeData); // store in cache
-    return typeData;
-  } catch (err) {
-    console.warn(`Failed to fetch type data from ${typeUrl} - `, err);
-    return {
-      strongAgainst: [],
-      weakAgainst: [],
-    }; // fallback to empty arrays
-  }
-}
-
-async function getEvolutiondata(p) {
-  const cacheKey = p.name.toLowerCase();
-  if (evolutionCache.has(cacheKey)) {
-    return evolutionCache.get(cacheKey);
-  }
-
-  const evoEntries = await loadEvolutionChain(p);
-  const enrichedEvoData = await enrichEvolutionEntries(evoEntries);
-
-  evolutionCache.set(cacheKey, enrichedEvoData);
-  return enrichedEvoData;
-}
 // actions
 async function nextPokemons() {
   if (pokeCount + PAGE_SIZE >= maxPokemons) return;
@@ -367,22 +238,22 @@ async function updateDialogContent(name) {
     title.textContent = capitalize(name);
   }
 
-  let p = pokeArray.find(function (pokemon) {
+  let pokemon = pokeArray.find(function (entry) {
     // find pokemon in pokeArray
-    return pokemon?.name === name; // handshake pokemon.name
+    return entry?.name === name; // handshake pokemon.name
   });
 
-  if (!p) {
-    p = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
+  if (!pokemon) {
+    pokemon = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
   }
-  if (!p) return; // if still not found, exit
+  if (!pokemon) return; // if still not found, exit
 
-  console.log("POKECACHE HIT: ", name);
-  const mainTypeUrl = p.types?.[0]?.type?.url; // handshake p.types[0].type.url
+  const mainTypeUrl = pokemon.types?.[0]?.type?.url; // handshake p.types[0].type.url
   const typeAttributes = await getTypeAttribute(mainTypeUrl); // get type attributes (strong/weak) for main type
-  renderDialog(p, typeAttributes);
+  
+  renderDialog(pokemon, typeAttributes);
 
-  const evoDisplayData = await getEvolutiondata(p); // get evolution data for pokemon
+  const evoDisplayData = await getEvolutionData(pokemon); // get evolution data for pokemon
   renderEvolution(evoDisplayData);
 
   updateDialogNav(name); // update dialog navigation buttons based on current pokemon index
@@ -412,7 +283,7 @@ function initDialogKeyboard() {
 
 function handleDialogOutsideClick(event) {
   const dialog = document.getElementById("lightbox");
-  if (!dialog) return;
+  if (!dialog || !dialog.open) return;
 
   if (event.target === dialog) {
     dialog.close(); // close dialog if click was on backdrop (dialog itself)
@@ -494,36 +365,6 @@ function handleOutsideClick(event) {
 function capitalize(s) {
   if (!s) return "";
   return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function extractEvolutionEntries(chain) {
-  const names = [];
-  let current = chain;
-
-  while (current) {
-    names.push({
-      name: current.species.name,
-      speciesUrl: current.species.url,
-    });
-
-    current = current.evolves_to[0];
-  }
-
-  return names;
-}
-
-function checkTypeCache(typeUrl) {
-  if (!typeUrl) {
-    return {
-      strongAgainst: [],
-      weakAgainst: [],
-    };
-  }
-  if (typeCache.has(typeUrl)) {
-    return typeCache.get(typeUrl);
-  }
-
-  return null; // not found in cache
 }
 
 function showLoading() {

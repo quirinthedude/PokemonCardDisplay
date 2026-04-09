@@ -146,7 +146,7 @@ header {
 .search-input:focus {
   border-color: var(--white-soft);
   outline-color: var(--blue-mid);
-  box-shadow: -0.5em 0.5em 0 var(--blue-dark);
+  /* box-shadow: -0.5em 0.5em 0 var(--blue-dark); */
 }
 
 .autocomplete-dropdown {
@@ -154,13 +154,14 @@ header {
   top: 100%;
   left: 0;
   width: 100%;
-  border: 0.3em solid var(--white-soft); /* outer border */
+  outline: 0.2em solid var(--white-soft); /* inner border */
+  border: 0.3em solid var(--blue-mid); /* outer border */
+
   border-top: none;
   border-radius: 0 0 1em 1em;
   background: var(--yellow-main);
-  /* border: 0.3em solid var(--blue-mid); */
   border-radius: 0 0 1em 1em;
-  box-shadow: -0.35em 0.35em 0 var(--blue-dark);
+  /* box-shadow: -0.35em 0.35em 0 var(--blue-dark); */
   z-index: 100;
 }
 
