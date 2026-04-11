@@ -162,27 +162,15 @@ async function openDialog(name) {
 function initDialogTabs() {
   const tabs = document.getElementById("dialog-tabs");
   const body = document.getElementById("dialog-body");
-  if (!tabs || !body) return;
 
+  if (!tabs || !body) return;
   if (tabs.dataset.bound === "1") return;
+  
   tabs.dataset.bound = "1";
 
-  tabs.addEventListener("click", function (e) {
-    const btn = e.target.closest("button[data-tab]");
-    if (!btn) return;
-
-    const tabName = btn.dataset.tab;
-
-    tabs.querySelectorAll("button[data-tab]").forEach(function (b) {
-      b.classList.toggle("is-active", b === btn);
-    });
-    body.querySelectorAll(".tab").forEach(function (panel) {
-      panel.classList.toggle(
-        "is-active",
-        panel.classList.contains("tab-" + tabName),
-      );
-    });
-  });
+  tabs.addEventListener("click", function (event) {
+    handdleDialogTabClick(event, tabs, body);
+  }); 
 }
 
 function initDialogNavigation() {
@@ -233,29 +221,12 @@ function updateDialogNav(currentName) {
 }
 
 async function updateDialogContent(name) {
-  const title = document.getElementById("dialog-title"); // pokemon name in dialog
-  if (title) {
-    title.textContent = capitalize(name);
-  }
+  setDialogTitle(name);
 
-  let pokemon = pokeArray.find(function (entry) {
-    // find pokemon in pokeArray
-    return entry?.name === name; // handshake pokemon.name
-  });
+  const pokemon = await findPokemonForDialog(name);
+  if (!pokemon) return; // if pokemon not found, exit
 
-  if (!pokemon) {
-    pokemon = await fetchPokemonData(name); // fetch if not found in pokeArray (eg from search)
-  }
-  if (!pokemon) return; // if still not found, exit
-
-  const mainTypeUrl = pokemon.types?.[0]?.type?.url; // handshake p.types[0].type.url
-  const typeAttributes = await getTypeAttribute(mainTypeUrl); // get type attributes (strong/weak) for main type
-  
-  renderDialog(pokemon, typeAttributes);
-
-  const evoDisplayData = await getEvolutionData(pokemon); // get evolution data for pokemon
-  renderEvolution(evoDisplayData);
-
+  await renderDialogViews(pokemon);
   updateDialogNav(name); // update dialog navigation buttons based on current pokemon index
 }
 
@@ -291,38 +262,23 @@ function handleDialogOutsideClick(event) {
 }
 
 function handleSearchInput() {
-  const query = searchInput.value.trim().toLowerCase(); // easier to compare
-  const dropdown = autocompleteDropdown;
+  if (!autocompleteDropdown || !searchInput) return; // safety check
 
-  if (!dropdown || !searchInput) return;
-  dropdown.innerHTML = "";
+  const query = searchInput.value.trim().toLowerCase();
+  autocompleteDropdown.innerHTML = ""; // clear previous suggestions
 
-  if (query.length >= 3) {
-    const suggestions = baseNames
-      .filter((name) => name.toLowerCase().startsWith(query))
-      .slice(0, 10);
-
-    if (suggestions.length > 0) {
-      searchInput.classList.add("dropdown-open"); // border-bottom none + radius
-      // -> only if suggestions, otherwise looks weird with empty dropdown
-
-      const ul = document.createElement("ul");
-
-      suggestions.forEach((name) => {
-        const li = document.createElement("li");
-        li.textContent = capitalize(name);
-        li.addEventListener("click", () => selectSuggestion(name));
-        ul.appendChild(li); // add click listener to each suggestion
-      });
-
-      dropdown.appendChild(ul); // add suggestions to dropdown
-      dropdown.style.display = "block";
-      return; // exit early if suggestions found
-    }
+  if (query.length < 3) {
+    hideSuggestions();
+    return;
   }
 
-  dropdown.style.display = "none"; // hide dropdown if no suggestions
-  searchInput.classList.remove("dropdown-open");
+  const suggestions = getSearchSuggestions(query);
+
+  if (suggestions.length === 0) {
+    hideSuggestions();
+    return;
+  }
+  renderSuggestions(suggestions);
 }
 
 function performSearch(query) {
@@ -381,4 +337,84 @@ function setNavDisabled(state) {
   if (next) next.classList.toggle("disabled", state);
   if (last) last.classList.toggle("disabled", state);
   if (start) start.classList.toggle("disabled", state);
+}
+
+function setDialogTitle(name) {
+  const title = document.getElementById("dialog-title");
+  if (!title) return;
+  title.textContent = capitalize(name);
+}
+
+async function findPokemonForDialog(name) {
+  let pokemon = pokeArray.find(function (entry) {
+    return entry?.name === name;
+  });
+
+  if (pokemon) return pokemon;
+
+  pokemon = await fetchPokemonData(name);
+  return pokemon;
+}
+
+async function renderDialogViews(pokemon) {
+  const mainTypeUrl = pokemon.types?.[0]?.type?.url;
+  const typeAttributes = await getTypeAttribute(mainTypeUrl);
+  renderDialog(pokemon, typeAttributes);
+
+  const evolutionDisplayData = await getEvolutionData(pokemon);
+  renderEvolution(evolutionDisplayData);
+}
+
+function getSearchSuggestions(query) {
+  return baseNames
+    .filter(function (name) {
+      return name.toLowerCase().startsWith(query.toLowerCase());
+    })
+    .slice(0, 10);
+}
+
+function renderSuggestions(suggestions) {
+  const suggsestionList = document.createElement("ul");
+
+  suggestions.forEach(function (name) {
+    const suggestionItem = document.createElement("li");
+    suggestionItem.textContent = capitalize(name);
+    suggestionItem.addEventListener("click", function () {
+      selectSuggestion(name);
+    });
+    suggsestionList.appendChild(suggestionItem);
+  });
+
+  autocompleteDropdown.appendChild(suggsestionList);
+  autocompleteDropdown.style.display = "block";
+  searchInput.classList.add("dropdown-open");
+}
+
+function hideSuggestions() {
+  autocompleteDropdown.style.display = "none";
+  searchInput.classList.remove("dropdown-open");
+}
+
+function handdleDialogTabClick(event, tabs, body) {
+  const clickedTabButton = event.target.closest("button[data-tab]");
+  if (!clickedTabButton) return;
+
+  const tabName = clickedTabButton.dataset.tab;
+  updateActiveTabButton(tabs, clickedTabButton);
+  updateActiveTabPanel(body, tabName);
+}
+
+function updateActiveTabButton(tabs, activeButton) {
+  tabs.querySelectorAll("button[data-tab]").forEach(function (tabButton) {
+    tabButton.classList.toggle("is-active", tabButton === activeButton);
+  });
+}
+
+function updateActiveTabPanel(body, tabName) {
+  body.querySelectorAll(".tab").forEach(function (panel) {
+    panel.classList.toggle(
+      "is-active",
+      panel.classList.contains("tab-" + tabName),
+    );
+  });
 }
