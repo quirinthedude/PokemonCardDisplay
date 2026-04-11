@@ -1,6 +1,6 @@
 export function renderPokemons(pokemonList, pageSize) {
   const container = document.getElementById("pokemon-container");
-  
+
   // fallback
   if (!container) return;
 
@@ -60,17 +60,17 @@ function renderImage(card, name, img, types) {
     <div class="poke-types">
     ${types
       .map(
-        (t) => 
-          `<span><img src="./assets/types/${t}.png" alt="${t}" title="${t}">${capitalize(t)}</span>`
+        (t) =>
+          `<span><img src="./assets/types/${t}.png" alt="${t}" title="${t}">${capitalize(t)}</span>`,
       )
       .join("")}
     </div>
 
     <div class="poke-img-wrap">
     ${
-      img 
-      ? `<img src="${img}" alt="${name}">` 
-      : `<div class="img-placeholder"></div>`
+      img
+        ? `<img src="${img}" alt="${name}">`
+        : `<div class="img-placeholder"></div>`
     }
     </div>
     <div class="poke-name">${capitalize(name)}</div>
@@ -97,7 +97,7 @@ export function renderDialog(pokemon, typeAttributes) {
 
   const types = getTypeNames(pokemon);
   const mainType = types[0];
-  const strongAgainst = typeAttributes.strongAgainst;;
+  const strongAgainst = typeAttributes.strongAgainst;
   const weakAgainst = typeAttributes.weakAgainst;
 
   // about Panel (dein Mock: Liste mit Icons)
@@ -118,8 +118,8 @@ export function renderDialog(pokemon, typeAttributes) {
 
         <h3>Strong Against:</h3>
         <ul>
-          ${strongAgainst.
-            map(
+          ${strongAgainst
+            .map(
               (t) => `
             <li>
               <img src="./assets/types/${t.name}.png" alt="${t.name}" title="${t.name}">
@@ -132,8 +132,8 @@ export function renderDialog(pokemon, typeAttributes) {
         
         <h3>Weak Against:</h3>
         <ul>
-          ${weakAgainst.
-            map(
+          ${weakAgainst
+            .map(
               (t) => `
             <li>
               <img src="./assets/types/${t.name}.png" alt="${t.name}" title="${t.name}">
@@ -141,9 +141,7 @@ export function renderDialog(pokemon, typeAttributes) {
              </li>
           `,
             )
-            .join("") 
-          }
-          </li>
+            .join("")}
         </ul>
       </div>
     </div>
