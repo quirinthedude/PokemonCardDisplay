@@ -22,3 +22,9 @@ Thumbs.db
 
 # --- tree ---
 tree.txt
+
+# --- style backup ---
+styles.css.old
+
+# --- main.js  backup ---
+main.old.js

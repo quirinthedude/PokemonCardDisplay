@@ -1,6 +1,6 @@
 /* =========================================================
    DA Modul 8 – Pokemon Card Display
-   styles.css (clean + structured)
+   styles.css (cleaned)
    ========================================================= */
 
 /* =========================
@@ -13,8 +13,8 @@
   --blue-dark: #0b5ed7;
   --blue-mid: #1e88e5;
   --white-soft: #f7fbff;
-  /* Pokémon Type Gradients */
 
+  /* Pokémon Type Gradients */
   --type-normal: linear-gradient(135deg, #a8a878, #c8c8a8);
   --type-fire: linear-gradient(135deg, #f08030, #f8a060);
   --type-water: linear-gradient(135deg, #6890f0, #98b8ff);
@@ -45,7 +45,6 @@ body {
   background-attachment: fixed;
   background-size: 100% 100%;
   background-color: #2b2b2b;
-
   max-width: 1280px;
   margin: auto;
 }
@@ -103,7 +102,7 @@ header {
 }
 
 /* =========================
-   Search Bar 
+   4) Search Bar
    ========================= */
 
 .search-wrap {
@@ -121,18 +120,12 @@ header {
   padding: 2%;
   font-size: 1rem;
   font-weight: 600;
-
   background: var(--yellow-main);
   color: var(--blue-dark);
-
-  outline: 0.2em solid var(--white-soft); /* inner border */
-  border: 0.3em solid var(--blue-mid); /* outer border */
+  outline: 0.2em solid var(--white-soft);
+  border: 0.3em solid var(--blue-mid);
   border-radius: 1em 1em 0 0;
   outline-offset: 0;
-
-  /* fluid shadow (relative to font-size) */
-  /* box-shadow: -0.35em 0.35em 0 var(--blue-dark); */
-
   transition:
     box-shadow 120ms ease,
     transform 120ms ease;
@@ -146,7 +139,6 @@ header {
 .search-input:focus {
   border-color: var(--white-soft);
   outline-color: var(--blue-mid);
-  /* box-shadow: -0.5em 0.5em 0 var(--blue-dark); */
 }
 
 .autocomplete-dropdown {
@@ -154,14 +146,11 @@ header {
   top: 100%;
   left: 0;
   width: 100%;
-  outline: 0.2em solid var(--white-soft); /* inner border */
-  border: 0.3em solid var(--blue-mid); /* outer border */
-
+  outline: 0.2em solid var(--white-soft);
+  border: 0.3em solid var(--blue-mid);
   border-top: none;
   border-radius: 0 0 1em 1em;
   background: var(--yellow-main);
-  border-radius: 0 0 1em 1em;
-  /* box-shadow: -0.35em 0.35em 0 var(--blue-dark); */
   z-index: 100;
 }
 
@@ -192,7 +181,7 @@ header {
 }
 
 /* =========================
-   4) Main Grid (Cards)
+   5) Main Grid (Cards)
    ========================= */
 
 #pokemon-container {
@@ -203,22 +192,19 @@ header {
 }
 
 /* =========================
-   5) Card Component
+   6) Card Component
    ========================= */
 
 .pokemon-card {
   position: relative;
-
-  border: 3px solid var(--blue-dark);
-  border-radius: 16px;
-  background: var(--white-soft);
-  padding: 12px;
-
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 10px;
   align-content: start;
-
+  padding: 12px;
+  border: 3px solid var(--blue-dark);
+  border-radius: 16px;
+  background: var(--white-soft);
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
   transition:
     transform 120ms ease,
@@ -230,13 +216,11 @@ header {
 }
 
 .poke-img-wrap {
-  border-radius: 12px;
-  /* background: linear-gradient(180deg, var(--yellow-light), var(--yellow-main)); */
-  padding: 10px;
-
   display: grid;
   place-items: center;
   aspect-ratio: 1 / 1;
+  padding: 10px;
+  border-radius: 12px;
 }
 
 .poke-img-wrap img {
@@ -254,15 +238,15 @@ header {
 }
 
 .poke-types {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+  min-height: 32px;
   text-align: center;
   font-size: 0.95rem;
   font-weight: 600;
   opacity: 0.95;
-  display: flex;
-  gap: 6px;
-  justify-content: space-between;
-  margin-top: 4px;
-  min-height: 32px;
 }
 
 .poke-types span {
@@ -292,7 +276,6 @@ header {
   height: 24px;
 }
 
-/* type-specific background colors for cards */
 .pokemon-card[data-type="normal"] .poke-img-wrap {
   background: var(--type-normal);
 }
@@ -365,7 +348,6 @@ header {
   background: var(--type-fairy);
 }
 
-/* Empty / placeholder card */
 .pokemon-card.empty {
   opacity: 0.55;
   border-style: dashed;
@@ -376,14 +358,13 @@ header {
 }
 
 /* =========================
-   6) Dialog (Lightbox)
+   7) Dialog (Lightbox)
    ========================= */
 
 dialog#lightbox {
   width: min(900px, 92vw);
   max-height: 88vh;
   margin: auto;
-  border-radius: 16px;
   padding: 0;
   overflow: visible;
   background: var(--white-soft);
@@ -392,9 +373,7 @@ dialog#lightbox {
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
   transform: rotateX(-70deg) scale(0.9);
   transform-origin: top;
-  transform:
-    180ms ease,
-    box-shadow 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
 dialog::backdrop {
@@ -420,13 +399,13 @@ dialog#lightbox[open] {
 }
 
 .dialog-img {
-  max-width: 240px;
-  width: 70%;
-  height: auto;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: start;
+  max-width: 240px;
+  width: 70%;
+  height: auto;
   padding-top: 16%;
   margin: auto;
 }
@@ -456,17 +435,17 @@ dialog#lightbox[open] {
 }
 
 .dialog-img img {
+  display: block;
   max-width: 100%;
   max-height: 320px;
   object-fit: contain;
-  display: block;
 }
 
 .dialog-shell {
   width: 100%;
+  max-height: 88vh;
   display: flex;
   flex-direction: column;
-  max-height: 88vh;
 }
 
 #dialog-header {
@@ -494,9 +473,8 @@ dialog#lightbox[open] {
 .dialog-nav img {
   width: 100%;
   height: 100%;
-  opacity: 0.8;
-
   object-fit: contain;
+  opacity: 0.8;
 }
 
 .dialog-nav:hover {
@@ -542,22 +520,22 @@ dialog[open] .dialog-img::after {
 }
 
 .evo-chain {
-  padding-top: 10%;
-  width: 100%;
-  height: 40%;
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-around;
   gap: 2%;
-  flex-wrap: wrap;
+  width: 100%;
+  height: 40%;
+  padding-top: 10%;
 }
 
 .evo-stage {
-  width: 25%;
-  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 25%;
+  height: auto;
   text-align: center;
   font-size: 16px;
   font-weight: 300;
@@ -570,9 +548,9 @@ dialog[open] .dialog-img::after {
 }
 
 .evo-arrow {
-  margin: auto;
   width: 5%;
   height: auto;
+  margin: auto;
   font-size: 28px;
   font-weight: 700;
 }
@@ -594,7 +572,6 @@ dialog[open] .dialog-img::after {
 }
 
 #dialog-body {
-  /* flex: 1; */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 12px 16px;
@@ -608,7 +585,6 @@ dialog[open] .dialog-img::after {
   display: block;
 }
 
-/* stats */
 .pokemon-stats {
   list-style: none;
   padding: 0;
@@ -631,15 +607,15 @@ dialog[open] .dialog-img::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2%;
   width: 96%;
   height: auto;
-  border: 0.2em solid var(--yellow-light);
-  background: var(--yellow-main);
-  gap: 2%;
-  outline-offset: 0;
-  border-radius: 1em;
+  padding: 2%;
   margin-top: 8%;
+  gap: 2%;
+  border: 0.2em solid var(--yellow-light);
+  border-radius: 1em;
+  background: var(--yellow-main);
+  outline-offset: 0;
 }
 
 .poke-info ul {
@@ -647,38 +623,37 @@ dialog[open] .dialog-img::after {
 }
 
 .poke-info img {
-  height: 16px;
   width: auto;
+  height: 16px;
 }
 
 .poke-menu {
-  padding: 2%;
-  width: 96%;
-  height: auto;
-  border: 0.2em solid var(--yellow-light);
-  background: var(--yellow-main);
   display: flex;
   justify-content: space-around;
   gap: 2%;
-  outline-offset: 0;
-  border-radius: 1em;
+  width: 96%;
+  height: auto;
+  padding: 2%;
   margin: auto;
+  border: 0.2em solid var(--yellow-light);
+  border-radius: 1em;
+  background: var(--yellow-main);
+  outline-offset: 0;
 }
 
 .poke-menu button {
+  height: 32px;
+  cursor: pointer;
   border: 0.2em solid var(--white-soft);
   outline: 0.2em solid var(--blue-mid);
   outline-offset: 0;
+  border-radius: 1em;
+  background: var(--yellow-main);
+  color: var(--blue-dark);
   text-transform: capitalize;
   font-weight: 700;
   text-align: center;
-  color: var(--blue-dark);
-  color: var(--blue-dark);
-  background: var(--yellow-main);
-  border-radius: 1em;
   font-family: "Courier New", Courier, monospace;
-  height: 32px;
-  cursor: pointer;
 }
 
 .poke-menu button:hover {
@@ -686,48 +661,49 @@ dialog[open] .dialog-img::after {
 }
 
 /* =========================
-   7) LOADING SPINNER
+   8) Loading Spinner
    ========================= */
+
 .loading-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: none; /* Hidden by default */
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .loading-overlay.active {
-  display: flex; /* Show the overlay when active */
+  display: flex;
 }
 
 .spinner {
+  position: relative;
   width: 160px;
   height: 160px;
   border: 4px solid #ccc;
   border-radius: 50%;
-  position: relative;
   background: linear-gradient(to bottom, red 50%, white 50%);
   animation: spin 6s linear infinite;
 }
 
 .spinner .line {
   position: absolute;
-  top: 0px;
+  top: 0;
   left: 50%;
   width: 4px;
   height: 100%;
+  transform: translateX(-50%);
+  border-radius: 2px;
   background: #ffd400;
   color: var(--blue-mid);
-  font-weight: 700;
   font-size: large;
-  border-radius: 2px;
+  font-weight: 700;
   text-align: center;
-  transform: translateX(-50%);
 }
 
 @keyframes spin {
@@ -737,7 +713,7 @@ dialog[open] .dialog-img::after {
 }
 
 /* =========================
-   8) Responsive
+   9) Responsive
    ========================= */
 
 @media (max-width: 800px) {
@@ -796,10 +772,10 @@ dialog[open] .dialog-img::after {
 
   .pokemon-box {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    flex-direction: column;
   }
 
   .test-dialog {

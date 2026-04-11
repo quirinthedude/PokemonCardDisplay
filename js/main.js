@@ -21,11 +21,13 @@ import {
   getTypeAttribute,
   getEvolutionData,
 } from "./fetches.js";
-// eventlisteners
 
+// eventlisteners
 window.addEventListener("DOMContentLoaded", init);
 
-// functions
+// ==========================
+// INIT / SETUP
+// ==========================
 
 async function init() {
   showLoading();
@@ -56,10 +58,12 @@ function bindUI() {
     if (nextButton.classList.contains("disabled")) return;
     nextPokemons();
   });
+
   prevButton.addEventListener("click", function () {
     if (prevButton.classList.contains("disabled")) return;
     lastPokemons();
   });
+
   homeButton.addEventListener("click", function () {
     if (homeButton.classList.contains("disabled")) return;
     initPokemons();
@@ -69,6 +73,7 @@ function bindUI() {
     searchInput.addEventListener("input", handleSearchInput);
     searchInput.addEventListener("keydown", handleSearchKeydown);
   }
+
   document.addEventListener("click", handleOutsideClick);
   bindCardClicks();
 }
@@ -80,6 +85,7 @@ function updateNavUI() {
   const lastPageStart = Math.floor((maxPokemons - 1) / PAGE_SIZE) * PAGE_SIZE;
   //               cut floating point
   //  -> investigates last row of the 341 Pokemons
+
   if (currentPageStart >= lastPageStart) nextButton.classList.add("disabled");
   else nextButton.classList.remove("disabled");
 }
@@ -93,7 +99,10 @@ async function loadPokemons() {
   });
 }
 
-// actions
+// ==========================
+// PAGE ACTIONS
+// ==========================
+
 async function nextPokemons() {
   if (currentPageStart + PAGE_SIZE >= maxPokemons) return;
 
@@ -125,6 +134,10 @@ async function initPokemons() {
   hideLoading();
 }
 
+// ==========================
+// CARD + DIALOG FLOW
+// ==========================
+
 function bindCardClicks() {
   const container = document.getElementById("pokemon-container");
   if (!container) return;
@@ -148,6 +161,7 @@ async function openDialog(name) {
 
   try {
     await updateDialogContent(name);
+
     if (!dialog.open) {
       dialog.showModal();
       dialog.focus(); // ensure dialog itself gets focus for keyboard navigation
@@ -159,190 +173,14 @@ async function openDialog(name) {
   }
 }
 
-function initDialogTabs() {
-  const tabs = document.getElementById("dialog-tabs");
-  const body = document.getElementById("dialog-body");
-
-  if (!tabs || !body) return;
-  if (tabs.dataset.bound === "1") return;
-  
-  tabs.dataset.bound = "1";
-
-  tabs.addEventListener("click", function (event) {
-    handleDialogTabClick(event, tabs, body);
-  }); 
-}
-
-function initDialogNavigation() {
-  const prevBtn = document.getElementById("dialog-prev");
-  const nextBtn = document.getElementById("dialog-next");
-
-  if (!prevBtn || !nextBtn) return;
-
-  prevBtn.addEventListener("click", () => navigateDialog(-1));
-  nextBtn.addEventListener("click", () => navigateDialog(1));
-}
-
-async function navigateDialog(direction) {
-  const title = document.getElementById("dialog-title");
-  if (!title) return;
-
-  const currentName = title.textContent.toLowerCase();
-  const index = currentPagePokemon.findIndex((pokemon) => pokemon.name === currentName);
-  if (index === -1) return;
-
-  const newIndex = index + direction;
-  if (newIndex < 0 || newIndex >= currentPagePokemon.length) return;
-
-  const newPokemon = currentPagePokemon[newIndex];
-  if (!newPokemon) return;
-
-  showLoading();
-
-  try {
-    await updateDialogContent(newPokemon.name);
-  } finally {
-    hideLoading();
-  } // ensures loading state is cleared even if updateDialogContent fails
-}
-
-function updateDialogNav(currentName) {
-  const prevBtn = document.getElementById("dialog-prev");
-  const nextBtn = document.getElementById("dialog-next");
-
-  if (!prevBtn || !nextBtn) return;
-
-  const index = currentPagePokemon.findIndex(
-    (pokemon) => pokemon.name === currentName.toLowerCase(),
-  );
-
-  prevBtn.classList.toggle("disabled", index <= 0); // disable if first
-  nextBtn.classList.toggle("disabled", index >= currentPagePokemon.length - 1); // disable if last
-}
-
 async function updateDialogContent(name) {
   setDialogTitle(name);
 
   const pokemon = await findPokemonForDialog(name);
-  if (!pokemon) return; // if pokemon not found, exit
+  if (!pokemon) return;
 
   await renderDialogViews(pokemon);
-  updateDialogNav(name); // update dialog navigation buttons based on current pokemon index
-}
-
-function initDialogClose() {
-  const dialog = document.getElementById("lightbox");
-  if (!dialog) return;
-
-  dialog.addEventListener("click", handleDialogOutsideClick);
-}
-
-function initDialogKeyboard() {
-  const dialog = document.getElementById("lightbox");
-  if (!dialog) return;
-
-  dialog.addEventListener("keydown", function (event) {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault(); // prevent default scrolling behavior
-      navigateDialog(-1);
-    } else if (event.key === "ArrowRight") {
-      event.preventDefault();
-      navigateDialog(1);
-    }
-  });
-}
-
-function handleDialogOutsideClick(event) {
-  const dialog = document.getElementById("lightbox");
-  if (!dialog || !dialog.open) return;
-
-  if (event.target === dialog) {
-    dialog.close(); // close dialog if click was on backdrop (dialog itself)
-  }
-}
-
-function handleSearchInput() {
-  if (!autocompleteDropdown || !searchInput) return; // safety check
-
-  const query = searchInput.value.trim().toLowerCase();
-  autocompleteDropdown.innerHTML = ""; // clear previous suggestions
-
-  if (query.length < 3) {
-    hideSuggestions();
-    return;
-  }
-
-  const suggestions = getSearchSuggestions(query);
-
-  if (suggestions.length === 0) {
-    hideSuggestions();
-    return;
-  }
-  renderSuggestions(suggestions);
-}
-
-function performSearch(query) {
-  const pokemon = baseNames.find(function (name) {
-    return name.toLowerCase() === query.toLowerCase();
-  });
-  if (pokemon) {
-    openDialog(pokemon);
-  } else {
-    alert("No Pokémon found with that name.");
-  }
-}
-
-function selectSuggestion(name) {
-  searchInput.value = name; // set input to selected name
-  autocompleteDropdown.style.display = "none"; // hide dropdown
-  performSearch(name); // trigger search action
-}
-
-function handleSearchKeydown(event) {
-  if (event.key === "Enter") {
-    const query = searchInput.value.trim();
-    autocompleteDropdown.style.display = "none"; // hide dropdown on enter
-    if (query) {
-      performSearch(query);
-    }
-  }
-}
-
-function handleOutsideClick(event) {
-  if (
-    !searchInput.contains(event.target) &&
-    !autocompleteDropdown.contains(event.target)
-  ) {
-    autocompleteDropdown.style.display = "none"; // hide dropdown if click outside
-  }
-}
-
-// helpers
-function capitalize(s) {
-  if (!s) return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function showLoading() {
-  document.getElementById("loading-overlay").classList.add("active");
-  setNavDisabled(true);
-}
-
-function hideLoading() {
-  document.getElementById("loading-overlay").classList.remove("active");
-  setNavDisabled(false);
-}
-
-function setNavDisabled(state) {
-  if (nextButton) nextButton.classList.toggle("disabled", state);
-  if (prevButton) prevButton.classList.toggle("disabled", state);
-  if (homeButton) homeButton.classList.toggle("disabled", state);
-}
-
-function setDialogTitle(name) {
-  const title = document.getElementById("dialog-title");
-  if (!title) return;
-  title.textContent = capitalize(name);
+  updateDialogNav(name);
 }
 
 async function findPokemonForDialog(name) {
@@ -363,6 +201,166 @@ async function renderDialogViews(pokemon) {
 
   const evolutionDisplayData = await getEvolutionData(pokemon);
   renderEvolution(evolutionDisplayData);
+}
+
+function updateDialogNav(currentName) {
+  const prevBtn = document.getElementById("dialog-prev");
+  const nextBtn = document.getElementById("dialog-next");
+
+  if (!prevBtn || !nextBtn) return;
+
+  const index = currentPagePokemon.findIndex(
+    (pokemon) => pokemon.name === currentName.toLowerCase(),
+  );
+
+  prevBtn.classList.toggle("disabled", index <= 0);
+  nextBtn.classList.toggle(
+    "disabled",
+    index >= currentPagePokemon.length - 1,
+  );
+}
+
+function initDialogTabs() {
+  const tabs = document.getElementById("dialog-tabs");
+  const body = document.getElementById("dialog-body");
+
+  if (!tabs || !body) return;
+  if (tabs.dataset.bound === "1") return;
+
+  tabs.dataset.bound = "1";
+
+  tabs.addEventListener("click", function (event) {
+    handleDialogTabClick(event, tabs, body);
+  });
+}
+
+function initDialogNavigation() {
+  const prevBtn = document.getElementById("dialog-prev");
+  const nextBtn = document.getElementById("dialog-next");
+
+  if (!prevBtn || !nextBtn) return;
+
+  prevBtn.addEventListener("click", () => navigateDialog(-1));
+  nextBtn.addEventListener("click", () => navigateDialog(1));
+}
+
+async function navigateDialog(direction) {
+  const title = document.getElementById("dialog-title");
+  if (!title) return;
+
+  const currentName = title.textContent.toLowerCase();
+  const index = currentPagePokemon.findIndex(
+    (pokemon) => pokemon.name === currentName,
+  );
+  if (index === -1) return;
+
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= currentPagePokemon.length) return;
+
+  const newPokemon = currentPagePokemon[newIndex];
+  if (!newPokemon) return;
+
+  showLoading();
+
+  try {
+    await updateDialogContent(newPokemon.name);
+  } finally {
+    hideLoading();
+  }
+}
+
+function initDialogClose() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("click", handleDialogOutsideClick);
+}
+
+function initDialogKeyboard() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      navigateDialog(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      navigateDialog(1);
+    }
+  });
+}
+
+function handleDialogOutsideClick(event) {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog || !dialog.open) return;
+
+  if (event.target === dialog) {
+    dialog.close();
+  }
+}
+
+// ==========================
+// SEARCH / AUTOCOMPLETE
+// ==========================
+
+function handleSearchInput() {
+  if (!autocompleteDropdown || !searchInput) return;
+
+  const query = searchInput.value.trim().toLowerCase();
+  autocompleteDropdown.innerHTML = "";
+
+  if (query.length < 3) {
+    hideSuggestions();
+    return;
+  }
+
+  const suggestions = getSearchSuggestions(query);
+
+  if (suggestions.length === 0) {
+    hideSuggestions();
+    return;
+  }
+
+  renderSuggestions(suggestions);
+}
+
+function performSearch(query) {
+  const pokemon = baseNames.find(function (name) {
+    return name.toLowerCase() === query.toLowerCase();
+  });
+
+  if (pokemon) {
+    openDialog(pokemon);
+  } else {
+    alert("No Pokémon found with that name.");
+  }
+}
+
+function selectSuggestion(name) {
+  searchInput.value = name;
+  autocompleteDropdown.style.display = "none";
+  performSearch(name);
+}
+
+function handleSearchKeydown(event) {
+  if (event.key === "Enter") {
+    const query = searchInput.value.trim();
+    autocompleteDropdown.style.display = "none";
+
+    if (query) {
+      performSearch(query);
+    }
+  }
+}
+
+function handleOutsideClick(event) {
+  if (
+    !searchInput.contains(event.target) &&
+    !autocompleteDropdown.contains(event.target)
+  ) {
+    autocompleteDropdown.style.display = "none";
+  }
 }
 
 function getSearchSuggestions(query) {
@@ -395,6 +393,10 @@ function hideSuggestions() {
   searchInput.classList.remove("dropdown-open");
 }
 
+// ==========================
+// DIALOG TAB HELPERS
+// ==========================
+
 function handleDialogTabClick(event, tabs, body) {
   const clickedTabButton = event.target.closest("button[data-tab]");
   if (!clickedTabButton) return;
@@ -417,4 +419,35 @@ function updateActiveTabPanel(body, tabName) {
       panel.classList.contains("tab-" + tabName),
     );
   });
+}
+
+// ==========================
+// HELPERS
+// ==========================
+
+function capitalize(s) {
+  if (!s) return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function showLoading() {
+  document.getElementById("loading-overlay").classList.add("active");
+  setNavDisabled(true);
+}
+
+function hideLoading() {
+  document.getElementById("loading-overlay").classList.remove("active");
+  setNavDisabled(false);
+}
+
+function setNavDisabled(state) {
+  if (nextButton) nextButton.classList.toggle("disabled", state);
+  if (prevButton) prevButton.classList.toggle("disabled", state);
+  if (homeButton) homeButton.classList.toggle("disabled", state);
+}
+
+function setDialogTitle(name) {
+  const title = document.getElementById("dialog-title");
+  if (!title) return;
+  title.textContent = capitalize(name);
 }
