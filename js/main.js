@@ -1,12 +1,12 @@
-// variables, constants
+// variables, constants (global state)
 
-let pokeCount = 0;
-let pokeArray = [];
+let currentPageStart = 0;
+let currentPagePokemon = [];
 let baseNames = [];
 let maxPokemons;
-let next; //  document.getElementById("next-btn")
-let last; // document.getElementById("last-btn")
-let start; // document.getElementById("poke-btn") all done in bindUI()
+let nextButton; //  document.getElementById("next-btn")
+let prevButton; // document.getElementById("last-btn")
+let homeButton; // document.getElementById("poke-btn") all done in bindUI()
 let searchInput;
 let autocompleteDropdown;
 
@@ -38,7 +38,7 @@ async function init() {
   maxPokemons = baseData.maxPokemons;
 
   await loadPokemons();
-  renderPokemons(pokeArray, PAGE_SIZE);
+  renderPokemons(currentPagePokemon, PAGE_SIZE);
   initDialogClose();
   initDialogKeyboard();
   updateNavUI();
@@ -47,21 +47,21 @@ async function init() {
 
 function bindUI() {
   autocompleteDropdown = document.querySelector(".autocomplete-dropdown");
-  next = document.getElementById("next-btn");
-  last = document.getElementById("last-btn");
-  start = document.getElementById("poke-btn");
+  nextButton = document.getElementById("next-btn");
+  prevButton = document.getElementById("last-btn");
+  homeButton = document.getElementById("poke-btn");
   searchInput = document.querySelector(".search-input");
 
-  next.addEventListener("click", function () {
-    if (next.classList.contains("disabled")) return;
+  nextButton.addEventListener("click", function () {
+    if (nextButton.classList.contains("disabled")) return;
     nextPokemons();
   });
-  last.addEventListener("click", function () {
-    if (last.classList.contains("disabled")) return;
+  prevButton.addEventListener("click", function () {
+    if (prevButton.classList.contains("disabled")) return;
     lastPokemons();
   });
-  start.addEventListener("click", function () {
-    if (start.classList.contains("disabled")) return;
+  homeButton.addEventListener("click", function () {
+    if (homeButton.classList.contains("disabled")) return;
     initPokemons();
   });
 
@@ -74,19 +74,19 @@ function bindUI() {
 }
 
 function updateNavUI() {
-  if (pokeCount === 0) last.classList.add("disabled");
-  else last.classList.remove("disabled");
+  if (currentPageStart === 0) prevButton.classList.add("disabled");
+  else prevButton.classList.remove("disabled");
 
   const lastPageStart = Math.floor((maxPokemons - 1) / PAGE_SIZE) * PAGE_SIZE;
   //               cut floating point
   //  -> investigates last row of the 341 Pokemons
-  if (pokeCount >= lastPageStart) next.classList.add("disabled");
-  else next.classList.remove("disabled");
+  if (currentPageStart >= lastPageStart) nextButton.classList.add("disabled");
+  else nextButton.classList.remove("disabled");
 }
 
 async function loadPokemons() {
-  pokeArray = await loadPokemonBatch({
-    startIndex: pokeCount,
+  currentPagePokemon = await loadPokemonBatch({
+    startIndex: currentPageStart,
     targetCount: PAGE_SIZE,
     baseNames,
     maxPokemons,
@@ -95,32 +95,32 @@ async function loadPokemons() {
 
 // actions
 async function nextPokemons() {
-  if (pokeCount + PAGE_SIZE >= maxPokemons) return;
+  if (currentPageStart + PAGE_SIZE >= maxPokemons) return;
 
   showLoading();
-  pokeCount += PAGE_SIZE;
+  currentPageStart += PAGE_SIZE;
   await loadPokemons();
-  renderPokemons(pokeArray, PAGE_SIZE);
+  renderPokemons(currentPagePokemon, PAGE_SIZE);
   updateNavUI();
   hideLoading();
 }
 
 async function lastPokemons() {
-  if (pokeCount === 0) return;
+  if (currentPageStart === 0) return;
 
   showLoading();
-  pokeCount -= PAGE_SIZE;
+  currentPageStart -= PAGE_SIZE;
   await loadPokemons();
-  renderPokemons(pokeArray, PAGE_SIZE);
+  renderPokemons(currentPagePokemon, PAGE_SIZE);
   updateNavUI();
   hideLoading();
 }
 
 async function initPokemons() {
   showLoading();
-  pokeCount = 0;
+  currentPageStart = 0;
   await loadPokemons();
-  renderPokemons(pokeArray, PAGE_SIZE);
+  renderPokemons(currentPagePokemon, PAGE_SIZE);
   updateNavUI();
   hideLoading();
 }
@@ -169,7 +169,7 @@ function initDialogTabs() {
   tabs.dataset.bound = "1";
 
   tabs.addEventListener("click", function (event) {
-    handdleDialogTabClick(event, tabs, body);
+    handleDialogTabClick(event, tabs, body);
   }); 
 }
 
@@ -188,13 +188,13 @@ async function navigateDialog(direction) {
   if (!title) return;
 
   const currentName = title.textContent.toLowerCase();
-  const index = pokeArray.findIndex((p) => p.name === currentName);
+  const index = currentPagePokemon.findIndex((pokemon) => pokemon.name === currentName);
   if (index === -1) return;
 
   const newIndex = index + direction;
-  if (newIndex < 0 || newIndex >= pokeArray.length) return;
+  if (newIndex < 0 || newIndex >= currentPagePokemon.length) return;
 
-  const newPokemon = pokeArray[newIndex];
+  const newPokemon = currentPagePokemon[newIndex];
   if (!newPokemon) return;
 
   showLoading();
@@ -212,12 +212,12 @@ function updateDialogNav(currentName) {
 
   if (!prevBtn || !nextBtn) return;
 
-  const index = pokeArray.findIndex(
-    (p) => p.name === currentName.toLowerCase(),
+  const index = currentPagePokemon.findIndex(
+    (pokemon) => pokemon.name === currentName.toLowerCase(),
   );
 
   prevBtn.classList.toggle("disabled", index <= 0); // disable if first
-  nextBtn.classList.toggle("disabled", index >= pokeArray.length - 1); // disable if last
+  nextBtn.classList.toggle("disabled", index >= currentPagePokemon.length - 1); // disable if last
 }
 
 async function updateDialogContent(name) {
@@ -334,9 +334,9 @@ function hideLoading() {
 }
 
 function setNavDisabled(state) {
-  if (next) next.classList.toggle("disabled", state);
-  if (last) last.classList.toggle("disabled", state);
-  if (start) start.classList.toggle("disabled", state);
+  if (nextButton) nextButton.classList.toggle("disabled", state);
+  if (prevButton) prevButton.classList.toggle("disabled", state);
+  if (homeButton) homeButton.classList.toggle("disabled", state);
 }
 
 function setDialogTitle(name) {
@@ -346,7 +346,7 @@ function setDialogTitle(name) {
 }
 
 async function findPokemonForDialog(name) {
-  let pokemon = pokeArray.find(function (entry) {
+  let pokemon = currentPagePokemon.find(function (entry) {
     return entry?.name === name;
   });
 
@@ -374,7 +374,7 @@ function getSearchSuggestions(query) {
 }
 
 function renderSuggestions(suggestions) {
-  const suggsestionList = document.createElement("ul");
+  const suggestionList = document.createElement("ul");
 
   suggestions.forEach(function (name) {
     const suggestionItem = document.createElement("li");
@@ -382,10 +382,10 @@ function renderSuggestions(suggestions) {
     suggestionItem.addEventListener("click", function () {
       selectSuggestion(name);
     });
-    suggsestionList.appendChild(suggestionItem);
+    suggestionList.appendChild(suggestionItem);
   });
 
-  autocompleteDropdown.appendChild(suggsestionList);
+  autocompleteDropdown.appendChild(suggestionList);
   autocompleteDropdown.style.display = "block";
   searchInput.classList.add("dropdown-open");
 }
@@ -395,7 +395,7 @@ function hideSuggestions() {
   searchInput.classList.remove("dropdown-open");
 }
 
-function handdleDialogTabClick(event, tabs, body) {
+function handleDialogTabClick(event, tabs, body) {
   const clickedTabButton = event.target.closest("button[data-tab]");
   if (!clickedTabButton) return;
 

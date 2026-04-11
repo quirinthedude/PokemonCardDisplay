@@ -1,4 +1,4 @@
-export function renderPokemons(pokeArray, pageSize) {
+export function renderPokemons(pokemonList, pageSize) {
   const container = document.getElementById("pokemon-container");
   
   // fallback
@@ -8,19 +8,19 @@ export function renderPokemons(pokeArray, pageSize) {
   container.innerHTML = "";
 
   for (let i = 0; i < pageSize; i++) {
-    const p = pokeArray[i];
+    const pokemon = pokemonList[i];
 
     // create a DOM node <div> which represents a single pokemon card
     const card = document.createElement("div");
     card.classList.add("pokemon-card");
 
-    if (!p) {
-      arrayFallback(card, container);
+    if (!pokemon) {
+      renderEmptyCard(card, container);
       continue;
     }
 
-    const { name, img } = pokemonImageDef(p);
-    const types = getTypeNames(p);
+    const { name, img } = getPokemonImageData(pokemon);
+    const types = getTypeNames(pokemon);
     const mainType = types[0];
 
     // attach pokemon name as dataset attribute
@@ -37,7 +37,7 @@ export function renderPokemons(pokeArray, pageSize) {
   }
 }
 
-function arrayFallback(card, container) {
+function renderEmptyCard(card, container) {
   card.classList.add("empty");
   card.textContent = "-";
   container.appendChild(card);
@@ -45,12 +45,12 @@ function arrayFallback(card, container) {
   // here appends the wrapper
 }
 
-function pokemonImageDef(p) {
-  const name = p.name ?? "unknown";
+function getPokemonImageData(pokemon) {
+  const name = pokemon.name ?? "unknown";
   // fallback if there is no name in the API, eg empty array
   const img =
-    p.sprites?.other?.["official-artwork"]?.front_default ??
-    p.sprites?.front_default ??
+    pokemon.sprites?.other?.["official-artwork"]?.front_default ??
+    pokemon.sprites?.front_default ??
     ""; // make sure there is no undefined (stability)
   return { name, img };
 }
@@ -89,13 +89,13 @@ function getTypeNames(pokemon) {
   return types;
 }
 
-export function renderDialog(p, typeAttributes) {
+export function renderDialog(pokemon, typeAttributes) {
   const typesPanel = document.querySelector("#dialog-body .tab-types");
   const statsPanel = document.querySelector("#dialog-body .tab-stats");
   const evoPanel = document.querySelector("#dialog-body .tab-evo");
   if (!typesPanel || !statsPanel || !evoPanel) return;
 
-  const types = getTypeNames(p);
+  const types = getTypeNames(pokemon);
   const mainType = types[0];
   const strongAgainst = typeAttributes.strongAgainst;;
   const weakAgainst = typeAttributes.weakAgainst;
@@ -104,7 +104,7 @@ export function renderDialog(p, typeAttributes) {
   typesPanel.innerHTML = `
     <div class="pokemon-box">
       <div class="dialog-img">
-        <img src="${getDialogImage(p)}" alt="${p.name}">
+        <img src="${getDialogImage(pokemon)}" alt="${pokemon.name}">
       </div>
 
       <div class="poke-info">
@@ -150,12 +150,12 @@ export function renderDialog(p, typeAttributes) {
   `;
 
   // stats
-  const stats = p.stats;
+  const stats = pokemon.stats;
 
   statsPanel.innerHTML = `
     <div class="pokemon-box">
       <div class="dialog-img">
-        <img src="${getDialogImage(p)}" alt="${p.name}">
+        <img src="${getDialogImage(pokemon)}" alt="${pokemon.name}">
       </div>
       <div class="poke-info">
         <h2>Stats</h2>
@@ -178,10 +178,10 @@ export function renderDialog(p, typeAttributes) {
   evoPanel.innerHTML = `<p>Evolution coming soon…</p>`;
 }
 
-function getDialogImage(p) {
+function getDialogImage(pokemon) {
   return (
-    p.sprites?.other?.["official-artwork"]?.front_default ??
-    p.sprites?.front_default ??
+    pokemon.sprites?.other?.["official-artwork"]?.front_default ??
+    pokemon.sprites?.front_default ??
     ""
   );
 }
