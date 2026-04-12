@@ -3,7 +3,6 @@
    styles.css (cleaned)
    ========================================================= */
 
-
 /* =========================
    1) Header / Navigation
    ========================= */
@@ -22,7 +21,8 @@ header {
 }
 
 #poke-btn:hover {
-  width: 44.5%;
+  animation: tab-wobble 220ms ease-out;
+  opacity: 1;
 }
 
 #last-btn,
@@ -32,8 +32,9 @@ header {
 }
 
 #last-btn:hover,
-#next-btn:hover {
-  width: 11%;
+#next-btn:hover {  
+  animation: tab-wobble 220ms ease-out;
+  opacity: 1;
 }
 
 #last-btn:hover {
@@ -129,6 +130,20 @@ header {
 
 .autocomplete-dropdown li:last-child {
   border-bottom: none;
+}
+
+#search-feedback {
+  margin-top: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  color: var(--blue-mid);
+  border-radius: 0 0 1em 1em;
+  background: var(--white-soft);
+  font-weight: 600;
+  text-align: center;
+  border: 0.3em solid var(--blue-mid);
+  width: 60%;
+  margin: auto;
 }
 
 /* =========================

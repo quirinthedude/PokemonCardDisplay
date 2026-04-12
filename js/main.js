@@ -342,6 +342,7 @@ function closeDialog() {
 // ==========================
 
 function handleSearchInput() {
+  hideSearchFeedback();
   if (!autocompleteDropdown || !searchInput) return;
 
   const query = searchInput.value.trim().toLowerCase();
@@ -370,7 +371,7 @@ function performSearch(query) {
   if (pokemon) {
     openDialog(pokemon);
   } else {
-    alert("No Pokémon found with that name.");
+    showSearchFeedback("No Pokémon found with that name.");
   }
 }
 
@@ -487,4 +488,23 @@ function setDialogTitle(name) {
   const title = document.getElementById("dialog-title");
   if (!title) return;
   title.textContent = capitalize(name);
+}
+
+function showSearchFeedback(message) {
+  const feedback = document.getElementById("search-feedback");
+  if (!feedback) return;
+
+  feedback.textContent = message;
+  feedback.classList.remove("hidden");
+
+  setTimeout(function () {
+    feedback.classList.add("hidden");
+  }, 3000);
+}
+
+function hideSearchFeedback() {
+  const feedback = document.getElementById("search-feedback");
+  if (!feedback) return;
+
+  feedback.classList.add("hidden");
 }
