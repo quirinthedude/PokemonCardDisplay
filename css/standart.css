@@ -1,20 +1,69 @@
-*{
-    box-sizing: border-box;
-    margin: 0;
-    scroll-behavior: smooth;
+/* =========================
+   1) Presets / Variables
+   ========================= */
+
+:root {
+  --yellow-main: #ffd400;
+  --yellow-light: #fff176;
+  --blue-dark: #0b5ed7;
+  --blue-mid: #1e88e5;
+  --white-soft: #f7fbff;
+
+  /* Pokémon Type Gradients */
+  --type-normal: linear-gradient(135deg, #a8a878, #c8c8a8);
+  --type-fire: linear-gradient(135deg, #f08030, #f8a060);
+  --type-water: linear-gradient(135deg, #6890f0, #98b8ff);
+  --type-electric: linear-gradient(135deg, #f8d030, #fff080);
+  --type-grass: linear-gradient(135deg, #78c850, #a8e080);
+  --type-ice: linear-gradient(135deg, #98d8d8, #c8f0f0);
+  --type-fighting: linear-gradient(135deg, #c03028, #e06050);
+  --type-poison: linear-gradient(135deg, #a040a0, #d080d0);
+  --type-ground: linear-gradient(135deg, #e0c068, #f0d890);
+  --type-flying: linear-gradient(135deg, #a890f0, #c8b8ff);
+  --type-psychic: linear-gradient(135deg, #f85888, #ff90b0);
+  --type-bug: linear-gradient(135deg, #a8b820, #c8d840);
+  --type-rock: linear-gradient(135deg, #b8a038, #d8c060);
+  --type-ghost: linear-gradient(135deg, #705898, #a088c0);
+  --type-dragon: linear-gradient(135deg, #7038f8, #a070ff);
+  --type-dark: linear-gradient(135deg, #705848, #a08870);
+  --type-steel: linear-gradient(135deg, #b8b8d0, #d8d8f0);
+  --type-fairy: linear-gradient(135deg, #ee99ac, #f7c0cf);
 }
 
+/* =========================
+   2) Base Layout
+   ========================= */
+
 body {
-    width: 100%;
-    max-width: 100vw;
-    padding-left: 2%;
-    padding-right: 2%;
+  background-image: url("../assets/spiral.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-color: #2b2b2b;
+  max-width: 1280px;
+  margin: auto;
+  width: 100%;
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+main {
+  perspective: 900px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  scroll-behavior: smooth;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
