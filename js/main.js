@@ -42,7 +42,9 @@ async function init() {
   await loadPokemons();
   renderPokemons(currentPagePokemon, PAGE_SIZE);
   initDialogClose();
+  initDialogCloseButton();
   initDialogKeyboard();
+  initDialogStateSync();
   updateNavUI();
   hideLoading();
 }
@@ -96,6 +98,15 @@ async function loadPokemons() {
     targetCount: PAGE_SIZE,
     baseNames,
     maxPokemons,
+  });
+}
+
+function inittDialogStateSync() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("close", function () {
+    document.body.classList.remove("no-scroll");
   });
 }
 
@@ -164,6 +175,7 @@ async function openDialog(name) {
 
     if (!dialog.open) {
       dialog.showModal();
+      document.body.classList.add("no-scroll");
       dialog.focus(); // ensure dialog itself gets focus for keyboard navigation
       const closeBtn = document.getElementById("dialog-close");
       if (closeBtn) closeBtn.focus();
@@ -276,6 +288,15 @@ function initDialogClose() {
   dialog.addEventListener("click", handleDialogOutsideClick);
 }
 
+function initDialogCloseButton() {
+  const closeBtn = document.getElementById("dialog-close");
+  if (!closeBtn) return;
+
+  closeBtn.addEventListener("click", function () {
+    document.body.classList.remove("no-scroll");
+  });
+}
+
 function initDialogKeyboard() {
   const dialog = document.getElementById("lightbox");
   if (!dialog) return;
@@ -296,8 +317,24 @@ function handleDialogOutsideClick(event) {
   if (!dialog || !dialog.open) return;
 
   if (event.target === dialog) {
-    dialog.close();
+    closeDialog();
   }
+}
+
+function initDialogStateSync() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog) return;
+
+  dialog.addEventListener("close", function () {
+    document.body.classList.remove("no-scroll");
+  });
+}
+
+function closeDialog() {
+  const dialog = document.getElementById("lightbox");
+  if (!dialog || !dialog.open) return;
+  dialog.close();
+  document.body.classList.remove("no-scroll");
 }
 
 // ==========================
