@@ -5,8 +5,6 @@ const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 const pokemonCache = new Map();
 const typeCache = new Map();
 const evolutionCache = new Map();
-// The Map object holds key-value pairs and remembers the original insertion order of the keys.
-// Any value (both objects and primitive values) may be used as either a key or a value.
 
 export async function loadBaseNames() {
   const response = await fetch("./json/base_names.json");

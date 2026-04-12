@@ -4,9 +4,9 @@ let currentPageStart = 0;
 let currentPagePokemon = [];
 let baseNames = [];
 let maxPokemons;
-let nextButton; //  document.getElementById("next-btn")
-let prevButton; // document.getElementById("last-btn")
-let homeButton; // document.getElementById("poke-btn") all done in bindUI()
+let nextButton;
+let prevButton;
+let homeButton;
 let searchInput;
 let autocompleteDropdown;
 
@@ -50,12 +50,22 @@ async function init() {
 }
 
 function bindUI() {
+  cacheUIElements();
+  bindNavigationButtons();
+  bindSearchInput();
+  document.addEventListener("click", handleOutsideClick);
+  bindCardClicks();
+}
+
+function cacheUIElements() {
   autocompleteDropdown = document.querySelector(".autocomplete-dropdown");
   nextButton = document.getElementById("next-btn");
   prevButton = document.getElementById("last-btn");
   homeButton = document.getElementById("poke-btn");
   searchInput = document.querySelector(".search-input");
+}
 
+function bindNavigationButtons() {
   nextButton.addEventListener("click", function () {
     if (nextButton.classList.contains("disabled")) return;
     nextPokemons();
@@ -70,14 +80,13 @@ function bindUI() {
     if (homeButton.classList.contains("disabled")) return;
     initPokemons();
   });
+}
 
-  if (searchInput) {
-    searchInput.addEventListener("input", handleSearchInput);
-    searchInput.addEventListener("keydown", handleSearchKeydown);
-  }
+function bindSearchInput() {
+  if (!searchInput) return;
 
-  document.addEventListener("click", handleOutsideClick);
-  bindCardClicks();
+  searchInput.addEventListener("input", handleSearchInput);
+  searchInput.addEventListener("keydown", handleSearchKeydown);
 }
 
 function updateNavUI() {
@@ -85,8 +94,6 @@ function updateNavUI() {
   else prevButton.classList.remove("disabled");
 
   const lastPageStart = Math.floor((maxPokemons - 1) / PAGE_SIZE) * PAGE_SIZE;
-  //               cut floating point
-  //  -> investigates last row of the 341 Pokemons
 
   if (currentPageStart >= lastPageStart) nextButton.classList.add("disabled");
   else nextButton.classList.remove("disabled");
@@ -176,7 +183,7 @@ async function openDialog(name) {
     if (!dialog.open) {
       dialog.showModal();
       document.body.classList.add("no-scroll");
-      dialog.focus(); // ensure dialog itself gets focus for keyboard navigation
+      dialog.focus();
       const closeBtn = document.getElementById("dialog-close");
       if (closeBtn) closeBtn.focus();
     }
@@ -226,10 +233,7 @@ function updateDialogNav(currentName) {
   );
 
   prevBtn.classList.toggle("disabled", index <= 0);
-  nextBtn.classList.toggle(
-    "disabled",
-    index >= currentPagePokemon.length - 1,
-  );
+  nextBtn.classList.toggle("disabled", index >= currentPagePokemon.length - 1);
 }
 
 function initDialogTabs() {
@@ -257,7 +261,21 @@ function initDialogNavigation() {
 }
 
 async function navigateDialog(direction) {
-  const title = document.getElementById("dialog-title");
+
+  const newPokemon = getDialogTargetPokemon(direction);
+  if (!newPokemon) return;
+
+  showLoading();
+
+  try {
+    await updateDialogContent(newPokemon.name);
+  } finally {
+    hideLoading();
+  }
+}
+
+function getDialogTargetPokemon(direction) {
+    const title = document.getElementById("dialog-title");
   if (!title) return;
 
   const currentName = title.textContent.toLowerCase();
@@ -269,16 +287,7 @@ async function navigateDialog(direction) {
   const newIndex = index + direction;
   if (newIndex < 0 || newIndex >= currentPagePokemon.length) return;
 
-  const newPokemon = currentPagePokemon[newIndex];
-  if (!newPokemon) return;
-
-  showLoading();
-
-  try {
-    await updateDialogContent(newPokemon.name);
-  } finally {
-    hideLoading();
-  }
+  return currentPagePokemon[newIndex];
 }
 
 function initDialogClose() {
