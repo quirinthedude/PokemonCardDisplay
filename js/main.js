@@ -22,6 +22,7 @@ import {
   getEvolutionData,
 } from "./fetches.js";
 import { initSearchBar } from "./searchbar.js"; 
+import { capitalize } from "./helper.js";
 
 
 // eventlisteners
@@ -86,13 +87,6 @@ function bindNavigationButtons() {
     if (homeButton.classList.contains("disabled")) return;
     initPokemons();
   });
-}
-
-function bindSearchInput() {
-  if (!searchInput) return;
-
-  searchInput.addEventListener("input", handleSearchInput);
-  searchInput.addEventListener("keydown", handleSearchKeydown);
 }
 
 function updateNavUI() {
@@ -196,6 +190,22 @@ async function openDialog(name) {
   } finally {
     hideLoading();
   }
+}
+
+export function showLoading() {
+  document.getElementById("loading-overlay").classList.add("active");
+  setNavDisabled(true);
+}
+
+export function hideLoading() {
+  document.getElementById("loading-overlay").classList.remove("active");
+  setNavDisabled(false);
+}
+
+function setNavDisabled(state) {
+  if (nextButton) nextButton.classList.toggle("disabled", state);
+  if (prevButton) prevButton.classList.toggle("disabled", state);
+  if (homeButton) homeButton.classList.toggle("disabled", state);
 }
 
 async function updateDialogContent(name) {
@@ -352,6 +362,11 @@ function closeDialog() {
   document.body.classList.remove("no-scroll");
 }
 
+function setDialogTitle(name) {
+  const title = document.getElementById("dialog-title");
+  if (!title) return;
+  title.textContent = capitalize(name);
+}
 
 // ==========================
 // DIALOG TAB HELPERS
@@ -379,35 +394,4 @@ function updateActiveTabPanel(body, tabName) {
       panel.classList.contains("tab-" + tabName),
     );
   });
-}
-
-// ==========================
-// HELPERS
-// ==========================
-
-function capitalize(s) {
-  if (!s) return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function showLoading() {
-  document.getElementById("loading-overlay").classList.add("active");
-  setNavDisabled(true);
-}
-
-function hideLoading() {
-  document.getElementById("loading-overlay").classList.remove("active");
-  setNavDisabled(false);
-}
-
-function setNavDisabled(state) {
-  if (nextButton) nextButton.classList.toggle("disabled", state);
-  if (prevButton) prevButton.classList.toggle("disabled", state);
-  if (homeButton) homeButton.classList.toggle("disabled", state);
-}
-
-function setDialogTitle(name) {
-  const title = document.getElementById("dialog-title");
-  if (!title) return;
-  title.textContent = capitalize(name);
 }

@@ -146,6 +146,12 @@ header {
   margin: auto;
 }
 
+.autocomplete-dropdown li.is-active {
+  background: var(--yellow-light);
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
 /* =========================
    3) Main Grid (Cards)
    ========================= */

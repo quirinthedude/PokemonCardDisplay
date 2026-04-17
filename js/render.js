@@ -1,3 +1,7 @@
+// imports
+import { capitalize } from "./helper.js";
+
+
 export function renderPokemons(pokemonList, pageSize) {
   const container = document.getElementById("pokemon-container");
   if (!container) return;
@@ -222,10 +226,4 @@ function getEvolutionTemplate(evoData) {
 
   html += "</div>";
   return html;
-}
-
-// helpers
-function capitalize(s) {
-  if (!s) return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }

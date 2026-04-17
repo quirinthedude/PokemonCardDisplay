@@ -1,14 +1,15 @@
-// ==========================
-// SEARCH / AUTOCOMPLETE
-// ==========================
-
 let searchInput;
 let autocompleteDropdown;
 let getBaseNames;
 let openDialog;
+let activeSuggestionIndex = -1;
+let currentSuggestions = [];
+
+// imports
+import { capitalize } from "./helper.js";
 
 export function initSearchBar(config) {
-  // set her Eventlisteners, working intern with config
+  // set here Eventlisteners, working intern with config
   searchInput = config.searchInput;
   autocompleteDropdown = config.autocompleteDropdown;
   getBaseNames = config.getBaseNames;
@@ -25,6 +26,7 @@ export function initSearchBar(config) {
 }
 
 function handleSearchInput() {
+  console.log("input fired", searchInput?.value);
   hideSearchFeedback();
   if (!autocompleteDropdown || !searchInput) return;
 
@@ -43,6 +45,7 @@ function handleSearchInput() {
     return;
   }
 
+  currentSuggestions = suggestions;
   renderSuggestions(suggestions);
 }
 
@@ -61,14 +64,32 @@ function performSearch(query) {
 
 function selectSuggestion(name) {
   searchInput.value = name;
-  autocompleteDropdown.style.display = "none";
+  hideSuggestions();
   performSearch(name);
 }
 
 function handleSearchKeydown(event) {
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    updateActiveSuggestion(1);
+    return;
+  }
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    updateActiveSuggestion(-1);
+    return;
+  }
+
   if (event.key === "Enter") {
+    event.preventDefault();
+
+    if (selectActiveSuggestion()) {
+      return;
+    }
+
     const query = searchInput.value.trim();
-    autocompleteDropdown.style.display = "none";
+    hideSuggestions();
 
     if (query) {
       performSearch(query);
@@ -96,11 +117,17 @@ function getSearchSuggestions(query) {
 }
 
 function renderSuggestions(suggestions) {
+  autocompleteDropdown.innerHTML = "";
   const suggestionList = document.createElement("ul");
 
-  suggestions.forEach(function (name) {
+  suggestions.forEach(function (name, index) {
     const suggestionItem = document.createElement("li");
     suggestionItem.textContent = capitalize(name);
+
+    if (index === activeSuggestionIndex) {
+      suggestionItem.classList.add("is-active");
+    }
+
     suggestionItem.addEventListener("click", function () {
       selectSuggestion(name);
     });
@@ -115,8 +142,9 @@ function renderSuggestions(suggestions) {
 function hideSuggestions() {
   autocompleteDropdown.style.display = "none";
   searchInput.classList.remove("dropdown-open");
+  activeSuggestionIndex = -1;
+  currentSuggestions = [];
 }
-
 
 function showSearchFeedback(message) {
   const feedback = document.getElementById("search-feedback");
@@ -135,4 +163,33 @@ function hideSearchFeedback() {
   if (!feedback) return;
 
   feedback.classList.add("hidden");
+}
+
+// =============================================================
+// helper functions for keyboard navigation in suggestions
+// =========================================================
+
+function updateActiveSuggestion(direction) {
+  if (currentSuggestions.length === 0) return;
+
+  activeSuggestionIndex += direction;
+
+  if (activeSuggestionIndex < 0) {
+    activeSuggestionIndex = currentSuggestions.length - 1;
+  } // Wrap around to the top
+  else if (activeSuggestionIndex >= currentSuggestions.length) {
+    activeSuggestionIndex = 0;
+  } // Wrap around to the bottom
+
+  renderSuggestions(currentSuggestions);
+}
+
+function selectActiveSuggestion() {
+  if (activeSuggestionIndex < 0) return false;
+
+  const selectedName = currentSuggestions[activeSuggestionIndex];
+  if (!selectedName) return false;
+
+  selectSuggestion(selectedName);
+  return true;
 }
