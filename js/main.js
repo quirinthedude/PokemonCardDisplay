@@ -3,6 +3,7 @@
 let currentPageStart = 0;
 let currentPagePokemon = [];
 let baseNames = [];
+let allPokemonNames = [];
 let maxPokemons;
 let nextButton;
 let prevButton;
@@ -16,11 +17,12 @@ const PAGE_SIZE = 20;
 import { renderPokemons, renderDialog, renderEvolution } from "./render.js";
 import {
   loadBaseNames,
+  loadAllPokemonNames,
   loadPokemonBatch,
   fetchPokemonData,
   getTypeAttribute,
   getEvolutionData,
-} from "./fetches.js";
+  } from "./fetches.js";
 import { initSearchBar } from "./searchbar.js"; 
 import { capitalize } from "./helper.js";
 
@@ -35,18 +37,20 @@ window.addEventListener("DOMContentLoaded", init);
 async function init() {
   showLoading();
   bindUI();
-  initSearchBar({
-    searchInput,
-    autocompleteDropdown,
-    getBaseNames: () => baseNames,
-    openDialog,
-  });
   initDialogTabs();
   initDialogNavigation();
 
   const baseData = await loadBaseNames();
   baseNames = baseData.baseNames;
   maxPokemons = baseData.maxPokemons;
+
+  allPokemonNames = await loadAllPokemonNames();
+  initSearchBar({
+    searchInput,
+    autocompleteDropdown,
+    getSearchNames: () => allPokemonNames,
+    openDialog,
+  });
 
   await loadPokemons();
   renderPokemons(currentPagePokemon, PAGE_SIZE);

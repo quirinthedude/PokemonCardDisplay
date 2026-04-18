@@ -11,6 +11,7 @@ dialog#lightbox {
   transform: rotateX(-70deg) scale(0.9);
   transform-origin: top;
   transition: transform 180ms ease, box-shadow 180ms ease;
+  color: var(--blue-mid);
 }
 
 dialog::backdrop {

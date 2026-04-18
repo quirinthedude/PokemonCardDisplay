@@ -172,3 +172,19 @@ function checkTypeCache(typeUrl) {
 
   return null;
 }
+
+export async function loadAllPokemonNames() {
+  const ALL_POKEMONS_LIMIT = 10000; // Arbitrary large number to ensure we get all Pokémon
+  try {
+    const response = await fetch(BASE_URL + "?limit=" + ALL_POKEMONS_LIMIT);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} for ${BASE_URL}?limit=${ALL_POKEMONS_LIMIT}`);
+    }
+
+    const data = await response.json();
+    return data.results.map((entry) => entry.name);
+  } catch (error) {
+    console.warn("Failed to load all Pokémon names - ", error);
+    return [];
+  }
+}

@@ -1,6 +1,6 @@
 let searchInput;
 let autocompleteDropdown;
-let getBaseNames;
+let getSearchNames;
 let openDialog;
 let activeSuggestionIndex = -1;
 let currentSuggestions = [];
@@ -12,7 +12,7 @@ export function initSearchBar(config) {
   // set here Eventlisteners, working intern with config
   searchInput = config.searchInput;
   autocompleteDropdown = config.autocompleteDropdown;
-  getBaseNames = config.getBaseNames;
+  getSearchNames = config.getSearchNames;
   openDialog = config.openDialog;
 
   if (!searchInput || !autocompleteDropdown) {
@@ -26,17 +26,21 @@ export function initSearchBar(config) {
 }
 
 function handleSearchInput() {
-  console.log("input fired", searchInput?.value);
   hideSearchFeedback();
   if (!autocompleteDropdown || !searchInput) return;
 
   const query = searchInput.value.trim().toLowerCase();
   autocompleteDropdown.innerHTML = "";
+  activeSuggestionIndex = -1;
+  currentSuggestions = [];
 
   if (query.length < 3) {
     hideSuggestions();
     return;
   }
+
+  const searchNames = getSearchNames();
+  if (!searchNames) return;
 
   const suggestions = getSearchSuggestions(query);
 
@@ -50,8 +54,8 @@ function handleSearchInput() {
 }
 
 function performSearch(query) {
-  const baseNames = getBaseNames();
-  const pokemon = baseNames.find(function (name) {
+  const searchNames = getSearchNames();
+  const pokemon = searchNames.find(function (name) {
     return name.toLowerCase() === query.toLowerCase();
   });
 
@@ -102,14 +106,14 @@ function handleOutsideClick(event) {
     !searchInput.contains(event.target) &&
     !autocompleteDropdown.contains(event.target)
   ) {
-    autocompleteDropdown.style.display = "none";
+    hideSuggestions();
   }
 }
 
 function getSearchSuggestions(query) {
-  const baseNames = getBaseNames();
+  const searchNames = getSearchNames();
 
-  return baseNames
+  return searchNames
     .filter(function (name) {
       return name.toLowerCase().startsWith(query.toLowerCase());
     })
