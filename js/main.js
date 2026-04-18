@@ -22,10 +22,9 @@ import {
   fetchPokemonData,
   getTypeAttribute,
   getEvolutionData,
-  } from "./fetches.js";
-import { initSearchBar } from "./searchbar.js"; 
+} from "./fetches.js";
+import { initSearchBar } from "./searchbar.js";
 import { capitalize } from "./helper.js";
-
 
 // eventlisteners
 window.addEventListener("DOMContentLoaded", init);
@@ -36,22 +35,37 @@ window.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   showLoading();
-  bindUI();
-  initDialogTabs();
-  initDialogNavigation();
+  initStaticUI();
+  await loadInitialData();
+  initSearch();
+  await renderInitialView();
+  hideLoading();
+}
 
+async function loadInitialData() {
   const baseData = await loadBaseNames();
   baseNames = baseData.baseNames;
   maxPokemons = baseData.maxPokemons;
 
   allPokemonNames = await loadAllPokemonNames();
+}
+
+function initStaticUI() {
+  bindUI();
+  initDialogTabs();
+  initDialogNavigation();
+}
+
+function initSearch() {
   initSearchBar({
     searchInput,
     autocompleteDropdown,
     getSearchNames: () => allPokemonNames,
     openDialog,
   });
+}
 
+async function renderInitialView() {
   await loadPokemons();
   renderPokemons(currentPagePokemon, PAGE_SIZE);
   initDialogClose();
@@ -59,7 +73,6 @@ async function init() {
   initDialogKeyboard();
   initDialogStateSync();
   updateNavUI();
-  hideLoading();
 }
 
 function bindUI() {
@@ -281,7 +294,6 @@ function initDialogNavigation() {
 }
 
 async function navigateDialog(direction) {
-
   const newPokemon = getDialogTargetPokemon(direction);
   if (!newPokemon) return;
 
@@ -295,7 +307,7 @@ async function navigateDialog(direction) {
 }
 
 function getDialogTargetPokemon(direction) {
-    const title = document.getElementById("dialog-title");
+  const title = document.getElementById("dialog-title");
   if (!title) return;
 
   const currentName = title.textContent.toLowerCase();
